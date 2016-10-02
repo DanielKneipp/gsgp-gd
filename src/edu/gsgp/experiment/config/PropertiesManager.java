@@ -240,8 +240,8 @@ public class PropertiesManager {
             throw new Exception("Error while parsing the command line.");
         }
     }
-    
-    private Properties loadProperties(String path) throws Exception{
+
+    private String preProcessPath(String path) {
         if (path.startsWith("~")) {
             String osName = System.getProperty("os.name").toLowerCase();
             String homePath = System.getProperty("user.home");
@@ -258,7 +258,11 @@ public class PropertiesManager {
             }
             path = path.replaceFirst("^\\.", currPath);
         }
-
+        return path;
+    }
+    
+    private Properties loadProperties(String path) throws Exception{
+        path = this.preProcessPath(path);
         File parameterFile = new File(path);
         if(!parameterFile.canRead()) 
             throw new FileNotFoundException("Parameter file can not be read: " + parameterFile.getCanonicalPath());
@@ -467,7 +471,7 @@ public class PropertiesManager {
                 return null;
             }
             if(isFile){
-                strValue = strValue.replaceFirst("^~",System.getProperty("user.home"));
+                strValue = this.preProcessPath(strValue);
             }
             loadedParametersLog.append(key.name).append("=").append(strValue).append("\n");
             return strValue;
