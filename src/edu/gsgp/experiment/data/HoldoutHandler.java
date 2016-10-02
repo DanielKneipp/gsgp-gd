@@ -155,7 +155,7 @@ public class HoldoutHandler implements DataProducer{
      * @throws SSRException Error in the file path/pattern.
      */
     private void getFromFile(String trainingPath, String testPath) throws Exception{
-        int lastFileSeparator = trainingPath.lastIndexOf(File.separator);
+        int lastFileSeparator = trainingPath.lastIndexOf("/");
         String filePattern = trainingPath.substring(lastFileSeparator + 1);
         String trainingFolder = trainingPath.substring(0, lastFileSeparator);
         String[] trainingRepeatedName = filePattern.split("#");
@@ -173,7 +173,7 @@ public class HoldoutHandler implements DataProducer{
         int index = 0;
         
         if(testPath != null && !testPath.isEmpty()){
-            lastFileSeparator = testPath.lastIndexOf(File.separator);
+            lastFileSeparator = testPath.lastIndexOf("/");
             filePattern = testPath.substring(lastFileSeparator + 1);
             testFolder = testPath.substring(0, lastFileSeparator);
             testRepeatedName = filePattern.split("#");

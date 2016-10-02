@@ -108,7 +108,7 @@ public class CrossvalidationHandler implements DataProducer{
      * @throws SGPException Error in the file path/pattern.
      */
     private void getFoldsFromFile(String dataPath) throws Exception{
-        int lastFileSeparator = dataPath.lastIndexOf(File.separator);
+        int lastFileSeparator = dataPath.lastIndexOf("/");
         String filePattern = dataPath.substring(lastFileSeparator + 1);
         String folderName = dataPath.substring(0, lastFileSeparator);
         String[] aux = filePattern.split("#");
