@@ -1,5 +1,5 @@
-parent = ~/experiments/scripts/masterGD.param
-experiment.data = ~/experiments/data/bioavailability-#.dat
+parent = ~/.gsgp-gd/experiments/scripts/masterGD.param
+experiment.data = ~/.gsgp-gd/experiments/data/bioavailability-#.dat
 experiment.file.prefix = bioavailability-sp0.4alp10
 breed.spread.prob = 0.4
 breed.spread.alpha = 10

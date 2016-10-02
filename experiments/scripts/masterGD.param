@@ -1,5 +1,5 @@
 # Output directory
-experiment.output.dir = ~/experiments/out/
+experiment.output.dir = ~/.gsgp-gd/experiments/out/
 # Path to a file with the list of seeds to use during iterations
 experiment.seed = 123456
 # List of terminals used to build new trees (separeted by commas)
