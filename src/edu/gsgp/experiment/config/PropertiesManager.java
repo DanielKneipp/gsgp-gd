@@ -242,7 +242,23 @@ public class PropertiesManager {
     }
     
     private Properties loadProperties(String path) throws Exception{
-        path = path.replaceFirst("^~",System.getProperty("user.home"));
+        if (path.startsWith("~")) {
+            String osName = System.getProperty("os.name").toLowerCase();
+            String homePath = System.getProperty("user.home");
+            if (osName.startsWith("windows")) {
+                homePath = homePath.replace("\\", "/");
+            }
+            path = path.replaceFirst("^~", homePath);
+        }
+        else if (path.startsWith(".") && !path.startsWith("..")) {
+            String osName = System.getProperty("os.name").toLowerCase();
+            String currPath = System.getProperty("user.dir");
+            if (osName.startsWith("windows")) {
+                currPath = currPath.replace("\\", "/");
+            }
+            path = path.replaceFirst("^\\.", currPath);
+        }
+
         File parameterFile = new File(path);
         if(!parameterFile.canRead()) 
             throw new FileNotFoundException("Parameter file can not be read: " + parameterFile.getCanonicalPath());
@@ -433,7 +449,7 @@ public class PropertiesManager {
     /**
      * Load a string property from the file.
      * @param key The name of the property
-     * @param defaultValue The default value for this property
+     * @param isFile Specifies whether the property relates to a file
      * @return The value loaded from the file or the default value, if it is not specified in the file.
      * @throws NumberFormatException The loaded value can not be converted to string
      * @throws NullPointerException The parameter file was not initialized
