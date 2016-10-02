@@ -1,4 +1,4 @@
-parent = ~/experiments/scripts/masterGSGP.param
-experiment.data = ~/experiments/data/cpu-#.dat
+parent = ~/.gsgp-gd/experiments/scripts/masterGSGP.param
+experiment.data = ~/.gsgp-gd/experiments/data/cpu-#.dat
 experiment.file.prefix = cpu-sgp
 

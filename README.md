@@ -16,7 +16,7 @@ This project is a Java implementation of the Geometric Semantic Genetic Programm
 
 ### Usage
 
-The parameter files are adjusted to work from the home directory. Thus, the folder *experiments* has to be copied to your home.
+The parameter files are adjusted to work from the home directory. Thus, the folder `experiments` has to be copied to `~/.gsgp-gd/`.
 In order to execute the experiments, run the following command line:
 ```
 	java -jar GSGP.jar -p path/to/parameter/file

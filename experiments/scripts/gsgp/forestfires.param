@@ -1,4 +1,4 @@
-parent = ~/experiments/scripts/masterGSGP.param
-experiment.data = ~/experiments/data/forestfires-#.dat
+parent = ~/.gsgp-gd/experiments/scripts/masterGSGP.param
+experiment.data = ~/.gsgp-gd/experiments/data/forestfires-#.dat
 experiment.file.prefix = forestfires-sgp
 

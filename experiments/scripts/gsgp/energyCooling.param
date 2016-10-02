@@ -1,4 +1,4 @@
-parent = ~/experiments/scripts/masterGSGP.param
-experiment.data = ~/experiments/data/energyCooling-#.dat
+parent = ~/.gsgp-gd/experiments/scripts/masterGSGP.param
+experiment.data = ~/.gsgp-gd/experiments/data/energyCooling-#.dat
 experiment.file.prefix = energyCooling-sgp
 

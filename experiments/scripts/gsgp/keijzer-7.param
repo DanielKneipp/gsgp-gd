@@ -1,5 +1,5 @@
-parent = ~/experiments/scripts/masterGSGP.param
-experiment.data = ~/experiments/data/keijzer-7-#.dat
+parent = ~/.gsgp-gd/experiments/scripts/masterGSGP.param
+experiment.data = ~/.gsgp-gd/experiments/data/keijzer-7-#.dat
 experiment.file.prefix = keijzer-7-sgp
 
 

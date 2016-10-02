@@ -1,4 +1,4 @@
-parent = ~/experiments/scripts/masterGSGP.param
-experiment.data = ~/experiments/data/concrete-#.dat
+parent = ~/.gsgp-gd/experiments/scripts/masterGSGP.param
+experiment.data = ~/.gsgp-gd/experiments/data/concrete-#.dat
 experiment.file.prefix = concrete-sgp
 
