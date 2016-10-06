@@ -17,5 +17,5 @@ import edu.gsgp.population.Population;
  * Copyright (C) 20014, Federal University of Minas Gerais, Belo Horizonte, Brazil
  */
 public interface IndividualSelector {
-    public Individual selectIndividual(Population population, MersenneTwister rnd);
+    public Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd);
 }

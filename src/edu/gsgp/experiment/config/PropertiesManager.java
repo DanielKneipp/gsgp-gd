@@ -39,6 +39,7 @@ import edu.gsgp.population.treebuilder.TreeBuilder;
 import edu.gsgp.population.fitness.Fitness;
 import edu.gsgp.population.operator.Breeder;
 import edu.gsgp.population.pipeline.Pipeline;
+import edu.gsgp.population.selector.DimensionSelector;
 import edu.gsgp.population.selector.IndividualSelector;
 import edu.gsgp.population.selector.TournamentSelector;
 import java.io.FileNotFoundException;
@@ -91,7 +92,8 @@ public class PropertiesManager {
     private Function[] functionSet;
     private ExperimentalData experimentalData;
     
-    private IndividualSelector individualSelector;
+    private IndividualSelector individualSelectorTournament;
+    private IndividualSelector individualSelectorDimension;
     
     private TreeBuilder individualBuilder;
     private TreeBuilder randomTreeBuilder;
@@ -144,7 +146,8 @@ public class PropertiesManager {
         populationInitializer = getPopInitObject();
         breederList = getBreederObjects();
         
-        individualSelector = getIndividualSelector();        
+        //pode tirar esse método. Instancia como seletor de torneio normal.
+        getIndividualSelector();        
     }
 
     public enum ParameterList {
@@ -300,17 +303,20 @@ public class PropertiesManager {
         }
     }
     
-    private IndividualSelector getIndividualSelector() throws Exception{
+    private void getIndividualSelector() throws Exception{
         String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
-        IndividualSelector indSelector;
         switch(value){
             case "tournament":
-                indSelector = new TournamentSelector(getIntegerProperty(ParameterList.TOURNAMENT_SIZE, 7));
+                this.individualSelectorTournament = new TournamentSelector(getIntegerProperty(ParameterList.TOURNAMENT_SIZE, 7));
+                break;
+            case "mixed":
+                this.individualSelectorTournament = new TournamentSelector(getIntegerProperty(ParameterList.TOURNAMENT_SIZE, 7));
+                //definir parâmetros do seletor.
+                this.individualSelectorDimension = new DimensionSelector();
                 break;
             default:
                 throw new Exception("The inidividual selector must be defined.");
         }
-        return indSelector;
     }
     
     private DataProducer getDataProducer() throws Exception{
@@ -787,7 +793,11 @@ public class PropertiesManager {
     }
     
     public Individual selectIndividual(Population population, MersenneTwister rndGenerator){
-        return individualSelector.selectIndividual(population, rndGenerator);
+        return individualSelectorTournament.selectIndividual(population, null, rndGenerator);
+    }
+    
+    public Individual selectIndividual(Population population, Individual individual, MersenneTwister rndGenerator){
+        return individualSelectorTournament.selectIndividual(population, individual, rndGenerator);
     }
 
     public Function getRandomFunction(MersenneTwister rnd) {
