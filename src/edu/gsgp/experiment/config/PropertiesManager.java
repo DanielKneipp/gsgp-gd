@@ -44,6 +44,8 @@ import edu.gsgp.population.selector.IndividualSelector;
 import edu.gsgp.population.selector.TournamentSelector;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Luiz Otavio Vilas Boas Oliveira
@@ -790,6 +792,26 @@ public class PropertiesManager {
     
     public Node getNewIndividualTree(MersenneTwister rnd){
         return individualBuilder.newRootedTree(0, rnd);
+    }
+    
+    public Individual[] selectIndividuals(Population population, MersenneTwister rndGenerator) {
+        try {
+            Individual[] individuals = new Individual[2];
+            individuals[0] = selectIndividual(population, rndGenerator);
+            String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
+            switch (value) {
+                case "tournament":
+                    individuals[1] = selectIndividual(population, rndGenerator);
+                    break;
+                case "mixed":
+                    individuals[1] = selectIndividual(population, individuals[0], rndGenerator);
+                    break;
+            }
+            return individuals;
+        } catch (NumberFormatException | NullPointerException | MissingOptionException ex) {
+            System.err.println("The inidividual selector must be defined.");
+        }
+        return null;
     }
     
     public Individual selectIndividual(Population population, MersenneTwister rndGenerator){
