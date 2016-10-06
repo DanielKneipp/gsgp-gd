@@ -63,12 +63,13 @@ public class GSXMBreeder extends Breeder{
 
     @Override
     public Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData) {
-        Individual p1 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
-        Individual p2 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
-        while(p1.equals(p2)) p2 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
+        Individual[] individuals = properties.selectIndividuals(originalPopulation, rndGenerator);
+//        Individual p1 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
+//        Individual p2 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
+        while(individuals[0].equals(individuals[1])) individuals[1] = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
         Node rt = properties.getRandomTree(rndGenerator);
-        BigInteger numNodes = p1.getNumNodes().add(p2.getNumNodes()).add(new BigInteger(rt.getNumNodes() + "")).add(BigInteger.ONE);
-        Fitness fitnessFunction = evaluate(p1, p2, rt, expData);
+        BigInteger numNodes = individuals[0].getNumNodes().add(individuals[1].getNumNodes()).add(new BigInteger(rt.getNumNodes() + "")).add(BigInteger.ONE);
+        Fitness fitnessFunction = evaluate(individuals[0], individuals[1], rt, expData);
         Individual offspring = new Individual(null, numNodes, fitnessFunction);
         return offspring;
     }
