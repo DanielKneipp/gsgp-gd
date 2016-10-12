@@ -819,7 +819,7 @@ public class PropertiesManager {
     }
     
     public Individual selectIndividual(Population population, Individual individual, ExperimentalData expData){
-        return individualSelectorTournament.selectIndividual(population, individual, null, expData);
+        return individualSelectorDimension.selectIndividual(population, individual, null, expData);
     }
 
     public Function getRandomFunction(MersenneTwister rnd) {
