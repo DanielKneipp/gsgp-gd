@@ -66,6 +66,7 @@ public class SimplePopulator extends Populator{
         for(int i = 0; i < size; i++){
             Node newTree = properties.getNewIndividualTree(rndGenerator);
             Fitness fitnessFunction = evaluate(newTree, expData);
+            System.out.println(fitnessFunction.getSemantics(DatasetType.TRAINING)[0]);
             population.add(new Individual(newTree, newTree.getNumNodes(), fitnessFunction));
         }
         return population;
