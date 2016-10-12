@@ -63,7 +63,7 @@ public class GSXMBreeder extends Breeder{
 
     @Override
     public Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData) {
-        Individual[] individuals = properties.selectIndividuals(originalPopulation, rndGenerator);
+        Individual[] individuals = properties.selectIndividuals(originalPopulation, rndGenerator, expData);
 //        Individual p1 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
 //        Individual p2 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
         while(individuals[0].equals(individuals[1])) individuals[1] = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);

@@ -794,7 +794,7 @@ public class PropertiesManager {
         return individualBuilder.newRootedTree(0, rnd);
     }
     
-    public Individual[] selectIndividuals(Population population, MersenneTwister rndGenerator) {
+    public Individual[] selectIndividuals(Population population, MersenneTwister rndGenerator, ExperimentalData expData) {
         try {
             Individual[] individuals = new Individual[2];
             individuals[0] = selectIndividual(population, rndGenerator);
@@ -804,7 +804,7 @@ public class PropertiesManager {
                     individuals[1] = selectIndividual(population, rndGenerator);
                     break;
                 case "mixed":
-                    individuals[1] = selectIndividual(population, individuals[0], rndGenerator);
+                    individuals[1] = selectIndividual(population, individuals[0], expData);
                     break;
             }
             return individuals;
@@ -815,11 +815,11 @@ public class PropertiesManager {
     }
     
     public Individual selectIndividual(Population population, MersenneTwister rndGenerator){
-        return individualSelectorTournament.selectIndividual(population, null, rndGenerator);
+        return individualSelectorTournament.selectIndividual(population, null, rndGenerator, null);
     }
     
-    public Individual selectIndividual(Population population, Individual individual, MersenneTwister rndGenerator){
-        return individualSelectorTournament.selectIndividual(population, individual, rndGenerator);
+    public Individual selectIndividual(Population population, Individual individual, ExperimentalData expData){
+        return individualSelectorTournament.selectIndividual(population, individual, null, expData);
     }
 
     public Function getRandomFunction(MersenneTwister rnd) {

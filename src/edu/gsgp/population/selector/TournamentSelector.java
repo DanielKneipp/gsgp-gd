@@ -6,6 +6,7 @@
 
 package edu.gsgp.population.selector;
 
+import edu.gsgp.experiment.data.ExperimentalData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import edu.gsgp.utils.MersenneTwister;
@@ -26,7 +27,7 @@ public class TournamentSelector implements IndividualSelector{
     }
     
     @Override
-    public Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd) throws NullPointerException{
+    public Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData) throws NullPointerException{
         int popSize = population.size();
         ArrayList<Integer> indexes = new ArrayList<>();
         for(int i = 0; i < popSize; i++) indexes.add(i);
