@@ -5,7 +5,6 @@
  */
 
 package edu.gsgp.nodes;
-
 /**
  * @author Luiz Otavio Vilas Boas Oliveira
  * http://homepages.dcc.ufmg.br/~luizvbo/ 
@@ -27,5 +26,5 @@ public interface Node {
     
     public void setParent(Node parent, int argPosition);
     
-    public int getParentArgPosition();    
+    public int getParentArgPosition();  
 }
