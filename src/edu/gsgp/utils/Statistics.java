@@ -111,7 +111,7 @@ public class Statistics {
         long methodTime = System.nanoTime();
         
         Individual bestOfGen = pop.getBestIndividual();
-       
+        
         bestOfGenSize[currentGeneration] = bestOfGen.getNumNodesAsString();
         bestOfGenTrFitness[currentGeneration] = bestOfGen.getTrainingFitnessAsString();
         bestOfGenTsFitness[currentGeneration] = bestOfGen.getTestFitnessAsString();

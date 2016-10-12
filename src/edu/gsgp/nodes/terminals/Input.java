@@ -23,7 +23,7 @@ public class Input implements Terminal{
     public Input(int index) {
         this.index = index;
     }
-    
+        
     @Override
     public int getArity() {
         return 0;

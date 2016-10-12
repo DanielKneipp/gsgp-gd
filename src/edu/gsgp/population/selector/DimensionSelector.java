@@ -5,6 +5,7 @@
  */
 package edu.gsgp.population.selector;
 
+import edu.gsgp.nodes.Node;
 import edu.gsgp.population.Individual;
 import edu.gsgp.population.Population;
 import edu.gsgp.utils.MersenneTwister;
@@ -23,5 +24,9 @@ public class DimensionSelector implements IndividualSelector{
     public Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+//    private void calculeResult(Node node){
+//        
+//    }
     
 }

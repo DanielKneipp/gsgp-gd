@@ -557,7 +557,7 @@ public class PropertiesManager {
                 break;
             }
         }
-        ArrayList<Terminal> terminals = new ArrayList<Terminal>();
+        ArrayList<Terminal> terminals = new ArrayList<Terminal>();  
         if(useAllInputs){
             for(int i = 0; i < dataProducer.getNumInputs(); i++) terminals.add(new Input(i));
             for(String str : sTerminals){
