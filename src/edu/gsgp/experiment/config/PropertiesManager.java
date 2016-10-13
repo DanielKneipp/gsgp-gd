@@ -798,13 +798,16 @@ public class PropertiesManager {
         try {
             Individual[] individuals = new Individual[2];
             individuals[0] = selectIndividual(population, rndGenerator);
+            Population pop = new Population();
+            pop.addAll(population);
+            pop.remove(individuals[0]);
             String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
             switch (value) {
                 case "tournament":
                     individuals[1] = selectIndividual(population, rndGenerator);
                     break;
                 case "mixed":
-                    individuals[1] = selectIndividual(population, individuals[0], expData);
+                    individuals[1] = selectIndividual(pop, individuals[0], expData);
                     break;
             }
             return individuals;
