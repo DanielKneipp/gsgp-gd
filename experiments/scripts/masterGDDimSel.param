@@ -1,5 +1,5 @@
 # Output directory
-experiment.output.dir = ~/.gsgp-gd/experiments/out/masterGSGP
+experiment.output.dir = ~/.gsgp-gd/experiments/out/masterGDDimSel
 # Path to a file with the list of seeds to use during iterations
 experiment.seed = 123456
 # List of terminals used to build new trees (separeted by commas)
@@ -11,7 +11,7 @@ tree.build.builder = RHH
 # Builder used to generate random trees for the semantic operators
 tree.build.builder.random.tree = GROW
 # Type of selector used to select individuals for next generations
-pop.ind.selector = TOURNAMENT
+pop.ind.selector = MIXED
 # Type of experiment (cross-validation or holdout):
 # - If crossvalidation, uses splited data from a list of files. Use paths to the
 # files in the form /pathToFile/repeatedName#repeatedName, where # indicates 
@@ -35,7 +35,7 @@ pop.ind.selector.tourn.size = 10
 # Number of experiment repetitions (per fold) - default = 1
 experiment.num.repetition = 50
 # Class responsible for evolve a new population from a previous one
-pop.pipeline = edu.gsgp.population.pipeline.StandardPipe
+pop.pipeline = edu.gsgp.population.pipeline.MGDPipe
 # Number of threads (for parallel execution)
 evol.num.threads = 25
 # Minimum error to consider a hit
