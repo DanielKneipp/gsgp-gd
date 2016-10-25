@@ -17,10 +17,10 @@ plotGraphic <- function(path, last.iteration=NA, n.executions=NA) {
   median <- file[2:n.executions,6:7]
   iqr <- file[2:n.executions,8:9]
 
-  plot("graphicMean.jpg", mean, (n.executions - 1), 2, list(c("tr_mean", "ts_mean"), problem), problem, "Mean Graphic of the Problems")
-  plot("graphicStandardDeviation.jpg", std, (n.executions - 1), 2, list(c("tr_std", "ts_std"), problem), problem, "Standard Deviation Graphic of the Problems")
-  plot("graphicMedian.jpg", median, (n.executions - 1), 2, list(c("tr_median", "ts_median"), problem), problem, "Median Graphic of the Problems")
-  plot("graphicIQR.jpg", iqr, (n.executions - 1), 2, list(c("tr_IQR", "ts_IQR"), problem), problem, "IQR Graphic of the Problems")
+  plot(paste(path,"/graphicMean.jpg", sep=""), mean, (n.executions - 1), 2, list(c("tr_mean", "ts_mean"), problem), problem, "Mean Graphic of the Problems")
+  plot(paste(path,"/graphicStandardDeviation.jpg", sep=""), std, (n.executions - 1), 2, list(c("tr_std", "ts_std"), problem), problem, "Standard Deviation Graphic of the Problems")
+  plot(paste(path,"/graphicMedian.jpg", sep=""), median, (n.executions - 1), 2, list(c("tr_median", "ts_median"), problem), problem, "Median Graphic of the Problems")
+  plot(paste(path,"/graphicIQR.jpg", sep=""), iqr, (n.executions - 1), 2, list(c("tr_IQR", "ts_IQR"), problem), problem, "IQR Graphic of the Problems")
 
 }
 
