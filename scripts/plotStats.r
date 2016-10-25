@@ -32,16 +32,10 @@ plot <- function(name, data, row, column, dimnames, problem, title){
 
   vector <- unlist(data, use.names = FALSE)
 
-  #if(row == 1){
-     color <- c(1:row)
-     #dimnamesAux = list(unlist(dimnames[2], use.names = FALSE), unlist(dimnames[1], use.names = FALSE))
-     dataGraphic<- matrix(as.numeric(paste(vector)), nrow=row, ncol=column, dimnames=dimnames, problem)
-     barplot(dataGraphic, beside=TRUE, col=color, main=title ,ylab="valor", xlab="medidas")
-     legend("topleft", legend=unlist(dimnames[1], use.names = FALSE), fill=color, bty="n")
-
-  #barplot(data, beside = TRUE, legend = rownames(problem))
-
-  
+  color <- c(1:row)
+  dataGraphic<- matrix(as.numeric(paste(vector)), nrow=row, ncol=column, dimnames=dimnames, problem)
+  barplot(dataGraphic, beside=TRUE, col=color, main=title ,ylab="valor", xlab="medidas")
+  legend("topleft", legend=unlist(dimnames[1], use.names = FALSE), fill=color, bty="n")
 
 }
 
