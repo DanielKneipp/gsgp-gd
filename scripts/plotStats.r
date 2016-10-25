@@ -19,10 +19,10 @@ plotGraphic <- function(path, last.iteration=NA, n.executions=NA) {
   median <- file[2:n.executions,6:7]
   iqr <- file[2:n.executions,8:9]
 
-  plot("graphicMean.jpg", mean, (n.executions - 1), 2, list(c("tr_mean", "ts_mean"), problem), problem, "Mean Graphic of the Problems")
-  plot("graphicStandardDeviation.jpg", std, (n.executions - 1), 2, list(c("tr_std", "ts_std"), problem), problem, "Standard Deviation Graphic of the Problems")
-  plot("graphicMedian.jpg", median, (n.executions - 1), 2, list(c("tr_median", "ts_median"), problem), problem, "Median Graphic of the Problems")
-  plot("graphicIQR.jpg", iqr, (n.executions - 1), 2, list(c("tr_IQR", "ts_IQR"), problem), problem, "IQR Graphic of the Problems")
+  plot("graphicMean.jpg", mean, (n.executions - 1), 2, list(problem, c("tr_mean", "ts_mean")), problem, "Mean Graphic of the Problems")
+  plot("graphicStandardDeviation.jpg", std, (n.executions - 1), 2, list(problem, c("tr_std", "ts_std")), problem, "Standard Deviation Graphic of the Problems")
+  plot("graphicMedian.jpg", median, (n.executions - 1), 2, list(problem, c("tr_median", "ts_median")), problem, "Median Graphic of the Problems")
+  plot("graphicIQR.jpg", iqr, (n.executions - 1), 2, list(problem, c("tr_IQR", "ts_IQR")), problem, "IQR Graphic of the Problems")
 
 }
 
@@ -32,12 +32,16 @@ plot <- function(name, data, row, column, dimnames, problem, title){
 
   vector <- unlist(data, use.names = FALSE)
 
-  dataGraphic<- matrix(as.numeric(paste(vector)), nrow=row, ncol=column, dimnames=dimnames, problem)
+  #if(row == 1){
+     color <- c(1:row)
+     #dimnamesAux = list(unlist(dimnames[2], use.names = FALSE), unlist(dimnames[1], use.names = FALSE))
+     dataGraphic<- matrix(as.numeric(paste(vector)), nrow=row, ncol=column, dimnames=dimnames, problem)
+     barplot(dataGraphic, beside=TRUE, col=color, main=title ,ylab="valor", xlab="medidas")
+     legend("topleft", legend=unlist(dimnames[1], use.names = FALSE), fill=color, bty="n")
 
   #barplot(data, beside = TRUE, legend = rownames(problem))
 
-  barplot(dataGraphic, beside=TRUE, col=c("blue", "green"), main=title ,ylab="valor", xlab="problema")
-  legend("topleft", legend=unlist(dimnames[1], use.names = FALSE), fill=c("blue", "green"), bty="n")
+  
 
 }
 
