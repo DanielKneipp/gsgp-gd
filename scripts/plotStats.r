@@ -30,7 +30,7 @@ plot <- function(name, data, row, column, dimnames, problem, title){
 
   vector <- unlist(data, use.names = FALSE)
 
-  color <- c(1:column)
+  color <- c("blue", "green")
   dataGraphic<- matrix(as.numeric(paste(vector)), nrow=column, ncol=row, dimnames=dimnames, problem)
   barplot(dataGraphic, beside=TRUE, col=color, main=title ,ylab="valor", xlab="medidas")
   legend("topleft", legend=unlist(dimnames[1], use.names = FALSE), fill=color, bty="n")
