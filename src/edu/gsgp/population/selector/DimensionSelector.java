@@ -41,7 +41,9 @@ public class DimensionSelector implements IndividualSelector {
         int bestIndex = 0;
         for (Individual ind : population) {
             for (int i = 0; i < outputs.length; i++) {
-                dimensions[index] = (((individual.getFitnessFunction().getSemantics(Utils.DatasetType.TRAINING)[i] < outputs[i]) && (outputs[i] < ind.getFitnessFunction().getSemantics(Utils.DatasetType.TRAINING)[i]))) ? dimensions[index] + 1: dimensions[index];
+                double fitnessSemantic1 = individual.getFitnessFunction().getSemantics(Utils.DatasetType.TRAINING)[i];
+                double fitnessSemantic2 = ind.getFitnessFunction().getSemantics(Utils.DatasetType.TRAINING)[i];
+                dimensions[index] = (((fitnessSemantic1 < outputs[i]) && (outputs[i] < fitnessSemantic2)) || ((fitnessSemantic2 < outputs[i]) && (outputs[i] < fitnessSemantic1))) ? dimensions[index] + 1: dimensions[index];
             }
             bestIndex = compare(index, bestIndex, dimensions);
             index++;
