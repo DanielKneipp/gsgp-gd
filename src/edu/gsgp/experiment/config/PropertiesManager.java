@@ -44,8 +44,6 @@ import edu.gsgp.population.selector.IndividualSelector;
 import edu.gsgp.population.selector.TournamentSelector;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Luiz Otavio Vilas Boas Oliveira
@@ -103,7 +101,7 @@ public class PropertiesManager {
     private String outputDir;
     private String filePrefix;
     
-    private String properties;
+    private String individualSelector;
     
     // Used do double check the parameters loaded/used by the experiment
     private StringBuilder loadedParametersLog;
@@ -308,8 +306,8 @@ public class PropertiesManager {
     }
     
     private void getIndividualSelector() throws Exception{
-        this.properties = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
-        switch(this.properties){
+        this.individualSelector = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
+        switch(this.individualSelector){
             case "tournament":
                 this.individualSelectorTournament = new TournamentSelector(getIntegerProperty(ParameterList.TOURNAMENT_SIZE, 7));
                 break;
@@ -804,7 +802,7 @@ public class PropertiesManager {
             pop.addAll(population);
             pop.remove(individuals[0]);
 //            String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
-            switch (this.properties) {
+            switch (this.individualSelector) {
                 case "tournament":
                     individuals[1] = selectIndividual(population, rndGenerator);
                     break;
