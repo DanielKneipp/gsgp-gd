@@ -144,8 +144,6 @@ public class PropertiesManager {
         outputDir = getStringProperty(ParameterList.PATH_OUTPUT_DIR, true);
         filePrefix = getStringProperty(ParameterList.FILE_PREFIX, false);
         
-        properties = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
-        
         individualBuilder = getIndividualBuilder(false);
         randomTreeBuilder = getIndividualBuilder(true);
         pipeline = getPipelineObject();
@@ -310,7 +308,7 @@ public class PropertiesManager {
     }
     
     private void getIndividualSelector() throws Exception{
-//        String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
+        this.properties = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
         switch(this.properties){
             case "tournament":
                 this.individualSelectorTournament = new TournamentSelector(getIntegerProperty(ParameterList.TOURNAMENT_SIZE, 7));
