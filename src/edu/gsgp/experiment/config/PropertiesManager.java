@@ -103,6 +103,8 @@ public class PropertiesManager {
     private String outputDir;
     private String filePrefix;
     
+    private String properties;
+    
     // Used do double check the parameters loaded/used by the experiment
     private StringBuilder loadedParametersLog;
 
@@ -141,6 +143,8 @@ public class PropertiesManager {
         
         outputDir = getStringProperty(ParameterList.PATH_OUTPUT_DIR, true);
         filePrefix = getStringProperty(ParameterList.FILE_PREFIX, false);
+        
+        properties = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
         
         individualBuilder = getIndividualBuilder(false);
         randomTreeBuilder = getIndividualBuilder(true);
@@ -306,8 +310,8 @@ public class PropertiesManager {
     }
     
     private void getIndividualSelector() throws Exception{
-        String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
-        switch(value){
+//        String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
+        switch(this.properties){
             case "tournament":
                 this.individualSelectorTournament = new TournamentSelector(getIntegerProperty(ParameterList.TOURNAMENT_SIZE, 7));
                 break;
@@ -801,8 +805,8 @@ public class PropertiesManager {
             Population pop = new Population();
             pop.addAll(population);
             pop.remove(individuals[0]);
-            String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
-            switch (value) {
+//            String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
+            switch (this.properties) {
                 case "tournament":
                     individuals[1] = selectIndividual(population, rndGenerator);
                     break;
@@ -811,7 +815,7 @@ public class PropertiesManager {
                     break;
             }
             return individuals;
-        } catch (NumberFormatException | NullPointerException | MissingOptionException ex) {
+        } catch (NumberFormatException | NullPointerException ex) {
             System.err.println("The inidividual selector must be defined.");
         }
         return null;
