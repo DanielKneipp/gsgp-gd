@@ -47,26 +47,28 @@ import java.lang.reflect.Constructor;
 
 /**
  * @author Luiz Otavio Vilas Boas Oliveira
- * http://homepages.dcc.ufmg.br/~luizvbo/ 
- * luiz.vbo@gmail.com
- * 
- * Copyright (C) 20014, Federal University of Minas Gerais, Belo Horizonte, Brazil
- * 
- * This class load the parameters from the file and instantiate the objects used 
+ * http://homepages.dcc.ufmg.br/~luizvbo/ luiz.vbo@gmail.com
+ *
+ * Copyright (C) 20014, Federal University of Minas Gerais, Belo Horizonte,
+ * Brazil
+ *
+ * This class load the parameters from the file and instantiate the objects used
  * in the GSGP
  */
 public class PropertiesManager {
-    public enum paramType{
+
+    public enum paramType {
+
         STRING, INT, DOUBLE, CLASS, CLASS_LIST, FILE
     }
-    
+
     protected boolean parameterLoaded;
-    
+
     protected Properties fileParameters;
     protected CommandLine cliParameters;
 
     protected Options cliOptions;
-    
+
     private DataProducer dataProducer;
     private MersenneTwister mersennePRNG;
     private ExperimentalData data;
@@ -76,9 +78,9 @@ public class PropertiesManager {
     private int numThreads;
     private int populationSize;
     private int rtPoolSize;
-    
+
     private int maxInitAttempts;
-    
+
     private double minError;
     private double mutationStep;
     private double spreaderInitProb;
@@ -91,31 +93,33 @@ public class PropertiesManager {
     private Terminal[] terminalSet;
     private Function[] functionSet;
     private ExperimentalData experimentalData;
-    
+
     private IndividualSelector individualSelectorTournament;
     private IndividualSelector individualSelectorDimension;
-    
+
     private TreeBuilder individualBuilder;
     private TreeBuilder randomTreeBuilder;
-    
+
     private String outputDir;
     private String filePrefix;
-    
+
     private String individualSelector;
-    
+    private double probability;
+
     // Used do double check the parameters loaded/used by the experiment
     private StringBuilder loadedParametersLog;
 
-    public PropertiesManager(String args[]) throws Exception{
+    public PropertiesManager(String args[]) throws Exception {
         loadedParametersLog = new StringBuilder();
-        
+
         setOptions();
         parameterLoaded = loadParameterFile(args);
-        if(parameterLoaded)
-            loadParameters();        
+        if (parameterLoaded) {
+            loadParameters();
+        }
     }
-    
-    private void loadParameters() throws Exception{
+
+    private void loadParameters() throws Exception {
         dataProducer = getDataProducer();
         mersennePRNG = new MersenneTwister(getLongProperty(ParameterList.SEED, System.currentTimeMillis()));
         terminalSet = getTerminalObjects();
@@ -123,36 +127,41 @@ public class PropertiesManager {
         fitnessFunction = getFitnessObject();
         numExperiments = getIntegerProperty(ParameterList.NUM_REPETITIONS, 1);
         numGenerations = getIntegerProperty(ParameterList.NUM_GENERATION, 200);
-        
+
         numThreads = getIntegerProperty(ParameterList.NUMBER_THREADS, -1);
-        if(numThreads == -1) numThreads = Runtime.getRuntime().availableProcessors();
-        
+        if (numThreads == -1) {
+            numThreads = Runtime.getRuntime().availableProcessors();
+        }
+
         populationSize = getIntegerProperty(ParameterList.POP_SIZE, 1000);
         rtPoolSize = getIntegerProperty(ParameterList.RT_POOL_SIZE, 200);
-        
+
         maxInitAttempts = getIntegerProperty(ParameterList.POP_INIT_ATTEMPTS, 10);
-        
+
         minError = getDoubleProperty(ParameterList.MIN_ERROR, 0);
         mutationStep = getDoubleProperty(ParameterList.MUT_STEP, 0.1);
         mutStepFromSD = getBooleanProperty(ParameterList.MUT_STEP_SD, true);
-        
+
         spreaderInitProb = getDoubleProperty(ParameterList.SPREADER_PROB, 0.5);
         spreaderAlpha = getDoubleProperty(ParameterList.SPREADER_ALPHA, 2);
-        
+
         outputDir = getStringProperty(ParameterList.PATH_OUTPUT_DIR, true);
         filePrefix = getStringProperty(ParameterList.FILE_PREFIX, false);
-        
+
         individualBuilder = getIndividualBuilder(false);
         randomTreeBuilder = getIndividualBuilder(true);
         pipeline = getPipelineObject();
         populationInitializer = getPopInitObject();
         breederList = getBreederObjects();
-        
+
+        this.probability = getDoubleProperty(ParameterList.BETWEENESS_PROB, 0.01);
+
         //pode tirar esse método. Instancia como seletor de torneio normal.
-        getIndividualSelector();        
+        getIndividualSelector();
     }
 
     public enum ParameterList {
+
         PARENT_FILE("parent", "Path to the parent parameter file. The child parameters overwrite the parent", false),
         PATH_DATA_FILE("experiment.data", "Path for the training/test files. See experiment.design option for more details", true),
         PATH_TEST_FILE("experiment.data.test", "Path for the test files. See experiment.design option for more details", false),
@@ -165,22 +174,20 @@ public class PropertiesManager {
         INDIVIDUAL_BUILDER_POP("tree.build.builder", "Builder used to generate trees for the initial population", true),
         INDIVIDUAL_BUILDER_RAND_TREE("tree.build.builder.random.tree", "Builder used to generate random trees for the semantic operators", true),
         INDIVIDUAL_SELECTOR("pop.ind.selector", "Type of selector used to select individuals for next generations", true),
-        
         EXPERIMENT_DESIGN("experiment.design", "Type of experiment (cross-validation or holdout):"
-                                                + "\n# - If crossvalidation, uses splited data from a list of files. Use paths to the"
-                                                + "\n# files in the form /pathToFile/repeatedName#repeatedName, where # indicates "
-                                                + "\n# where the fold index is placed (a number from 0 to k-1). E.g. /home/iris-#.dat,"
-                                                + "\n# with 3 folds in the path will look for iris-0.dat, iris-1.dat and iris-2.dat"
-                                                + "\n# - If holdout, we have two cases: "
-                                                + "\n#   1) Use paths to the files in the form /pathToFile/repeatedName#repeatedName,"
-                                                + "\n#      where # is composed by the pattern (train|test)-i with i=0,1,...,n-1, where n is"
-                                                + "\n#      the number of experiment files. E.g. /home/iris-#.dat, with 4 files (2x(train+test))"
-                                                + "\n#      in the path will look for iris-train-0.dat, iris-test-0.dat, iris-train-1.dat and iris-test-1.dat"
-                                                + "\n#   2) Use the path in 'experiment.data' to read the training files in the format "
-                                                + "\n#      /pathToFile/repeatedName#repeatedName and the path in 'experiment.data.test'"
-                                                + "\n#      to read the test data, replacing # by i=0,1,...,n-1. This option is used when"
-                                                + "\n#      'experiment.data.test' is provided", true),
-        
+                + "\n# - If crossvalidation, uses splited data from a list of files. Use paths to the"
+                + "\n# files in the form /pathToFile/repeatedName#repeatedName, where # indicates "
+                + "\n# where the fold index is placed (a number from 0 to k-1). E.g. /home/iris-#.dat,"
+                + "\n# with 3 folds in the path will look for iris-0.dat, iris-1.dat and iris-2.dat"
+                + "\n# - If holdout, we have two cases: "
+                + "\n#   1) Use paths to the files in the form /pathToFile/repeatedName#repeatedName,"
+                + "\n#      where # is composed by the pattern (train|test)-i with i=0,1,...,n-1, where n is"
+                + "\n#      the number of experiment files. E.g. /home/iris-#.dat, with 4 files (2x(train+test))"
+                + "\n#      in the path will look for iris-train-0.dat, iris-test-0.dat, iris-train-1.dat and iris-test-1.dat"
+                + "\n#   2) Use the path in 'experiment.data' to read the training files in the format "
+                + "\n#      /pathToFile/repeatedName#repeatedName and the path in 'experiment.data.test'"
+                + "\n#      to read the test data, replacing # by i=0,1,...,n-1. This option is used when"
+                + "\n#      'experiment.data.test' is provided", true),
         MAX_TREE_DEPTH("tree.build.max.depth", "Max depth allowed when building trees", false),
         MIN_TREE_DEPTH("tree.min.depth", "Min depth allowed when building trees", false),
         NUM_GENERATION("evol.num.generation", "Number of generations", false),
@@ -189,20 +196,19 @@ public class PropertiesManager {
         RT_POOL_SIZE("rt.pool.size", "Size of the pool of random trees used by GSX/GSM", false),
         NUMBER_THREADS("evol.num.threads", "Number of threads (for parallel execution)", false),
         TOURNAMENT_SIZE("pop.ind.selector.tourn.size", "Tournament size, when using tournament as selector", false),
-        
         MIN_ERROR("evol.min.error", "Minimum error to consider a hit", false),
         MUT_STEP("breed.mut.step", "Mutation step", false),
         MUT_STEP_SD("breed.mut.step.sd", "Indicate if the mutation step is absolute (false) or relative to the stardard deviation"
-                                        + "\n# of the outputs of the training set.", false),
+                + "\n# of the outputs of the training set.", false),
         BREEDERS_LIST("breed.list", "List of breeders classes used during the evolution. The list items must be comma separated and the propability"
-                                  + "\n# must follow the breeder class separated by a *. E.g.: "
-                                  + "\n# edu.gsgp.population.builder.individual.BreederA*0.1, edu.gsgp.population.builder.individual.BreederB*0.9", true),
+                + "\n# must follow the breeder class separated by a *. E.g.: "
+                + "\n# edu.gsgp.population.builder.individual.BreederA*0.1, edu.gsgp.population.builder.individual.BreederB*0.9", true),
         POP_INITIALIZER("pop.initializer", "Population Initializer class. Default: edu.gsgp.population.builder.individual.SimplePopulator", true),
         POP_PIPELINE("pop.pipeline", "Class responsible for evolve a new population from a previous one", false),
         POP_INIT_ATTEMPTS("pop.initializer.attempts", "Number of attemtps before adding an individual in the population", false),
-        
         SPREADER_PROB("breed.spread.prob", "Probability of applying the spreader operator (in standalone mode)", false),
-        SPREADER_ALPHA("breed.spread.alpha", "Alpha used to compute the effective probability of applying the spreader", false);
+        SPREADER_ALPHA("breed.spread.alpha", "Alpha used to compute the effective probability of applying the spreader", false),
+        BETWEENESS_PROB("pop.ind.selector.betweeness.prob", "Probability of applying the betweeness operator", false);
 //        MUT_PROB("breed.mut.prob", "Probability of applying the mutation operator", false),
 //        XOVER_PROB("breed.xover.prob", "Probability of applying the crossover operator", false),
 //        SEMANTIC_SIMILARITY_THRESHOLD("sem.gp.epsilon", "Threshold used to determine if two semantics are similar", false);
@@ -220,28 +226,28 @@ public class PropertiesManager {
 
     /**
      * Load the parameters from the CLI and file
+     *
      * @param args CLI parameters
      * @return True if and only if parameters are loaded both from CLI and file
-     * @throws Exception 
+     * @throws Exception
      */
-    private boolean loadParameterFile(String[] args) throws Exception{
+    private boolean loadParameterFile(String[] args) throws Exception {
         try {
             CommandLineParser parser = new DefaultParser();
             CommandLine parametersCLI = parser.parse(cliOptions, args);
-            if(parametersCLI.hasOption("H")){
+            if (parametersCLI.hasOption("H")) {
                 writeParameterModel();
                 return false;
             }
-            if(!parametersCLI.hasOption("p"))
+            if (!parametersCLI.hasOption("p")) {
                 throw new Exception("The parameter file was not specified.");
+            }
             String path = parametersCLI.getOptionValue("p");
             fileParameters = loadProperties(path);
             return true;
-        } 
-        catch (MissingOptionException ex){
+        } catch (MissingOptionException ex) {
             throw new Exception("Required parameter not found.");
-        }
-        catch (ParseException ex) {
+        } catch (ParseException ex) {
             throw new Exception("Error while parsing the command line.");
         }
     }
@@ -254,8 +260,7 @@ public class PropertiesManager {
                 homePath = homePath.replace("\\", "/");
             }
             path = path.replaceFirst("^~", homePath);
-        }
-        else if (path.startsWith(".") && !path.startsWith("..")) {
+        } else if (path.startsWith(".") && !path.startsWith("..")) {
             String osName = System.getProperty("os.name").toLowerCase();
             String currPath = System.getProperty("user.dir");
             if (osName.startsWith("windows")) {
@@ -265,25 +270,26 @@ public class PropertiesManager {
         }
         return path;
     }
-    
-    private Properties loadProperties(String path) throws Exception{
+
+    private Properties loadProperties(String path) throws Exception {
         path = this.preProcessPath(path);
         File parameterFile = new File(path);
-        if(!parameterFile.canRead()) 
+        if (!parameterFile.canRead()) {
             throw new FileNotFoundException("Parameter file can not be read: " + parameterFile.getCanonicalPath());
+        }
         FileInputStream fileInput = new FileInputStream(parameterFile);
         Properties property = new Properties();
         property.load(fileInput);
-        if(property.containsKey(ParameterList.PARENT_FILE.name)){
+        if (property.containsKey(ParameterList.PARENT_FILE.name)) {
             Properties propertyParent = loadProperties(property.getProperty("parent").trim());
             propertyParent.putAll(property);
             property = propertyParent;
         }
         return property;
     }
-        
-    private void writeParameterModel(){
-        try{
+
+    private void writeParameterModel() {
+        try {
             File file = new File("model.param");
 
             // if file doesnt exists, then create it
@@ -293,25 +299,24 @@ public class PropertiesManager {
             FileWriter fw = new FileWriter(file);
             BufferedWriter bw = new BufferedWriter(fw);
             StringBuilder textToPrint = new StringBuilder();
-            for(ParameterList p : ParameterList.values()){
+            for (ParameterList p : ParameterList.values()) {
                 textToPrint.append("# " + p.description + "\n");
                 textToPrint.append(p.name + " = \n");
             }
             bw.write(textToPrint.toString());
             bw.close();
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
-    private void getIndividualSelector() throws Exception{
+
+    private void getIndividualSelector() throws Exception {
         this.individualSelector = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
-        switch(this.individualSelector){
+        switch (this.individualSelector) {
             case "tournament":
                 this.individualSelectorTournament = new TournamentSelector(getIntegerProperty(ParameterList.TOURNAMENT_SIZE, 7));
                 break;
-            case "mixed":
+            case "betweeness":
                 this.individualSelectorTournament = new TournamentSelector(getIntegerProperty(ParameterList.TOURNAMENT_SIZE, 7));
                 //definir parâmetros do seletor.
                 this.individualSelectorDimension = new DimensionSelector();
@@ -320,11 +325,11 @@ public class PropertiesManager {
                 throw new Exception("The inidividual selector must be defined.");
         }
     }
-    
-    private DataProducer getDataProducer() throws Exception{
+
+    private DataProducer getDataProducer() throws Exception {
         String value = getStringProperty(ParameterList.EXPERIMENT_DESIGN, false).toLowerCase();
         DataProducer dataProducer;
-        switch(value){
+        switch (value) {
             case "crossvalidation":
                 dataProducer = new CrossvalidationHandler();
                 break;
@@ -337,25 +342,28 @@ public class PropertiesManager {
         dataProducer.setDataset(getStringProperty(ParameterList.PATH_DATA_FILE, true), getStringProperty(ParameterList.PATH_TEST_FILE, true));
         return dataProducer;
     }
-    
+
     /**
      * Load a boolean property from the file.
+     *
      * @param key The name of the property
      * @param defaultValue The default value for this property
-     * @return The value loaded from the file or the default value, if it is not specified in the file.
-     * @throws NumberFormatException The loaded value can not be converted to boolean
+     * @return The value loaded from the file or the default value, if it is not
+     * specified in the file.
+     * @throws NumberFormatException The loaded value can not be converted to
+     * boolean
      * @throws NullPointerException The parameter file was not initialized
-     * @throws MissingOptionException The parameter is mandatory and it was not found in the parameter file.
+     * @throws MissingOptionException The parameter is mandatory and it was not
+     * found in the parameter file.
      */
-    private boolean getBooleanProperty(ParameterList key, boolean defaultValue) 
-                    throws NumberFormatException, NullPointerException, MissingOptionException{
+    private boolean getBooleanProperty(ParameterList key, boolean defaultValue)
+            throws NumberFormatException, NullPointerException, MissingOptionException {
         try {
             boolean keyPresent = fileParameters.containsKey(key.name);
             String strValue = keyPresent ? fileParameters.getProperty(key.name).replaceAll("\\s", "") : null;
             if (!keyPresent && key.mandatory) {
                 throw new MissingOptionException("The input parameter (" + key.name + ") was not found");
-            }
-            else if(!keyPresent || strValue.equals("")){
+            } else if (!keyPresent || strValue.equals("")) {
                 loadedParametersLog.append(key.name).append("=").append(defaultValue).append(" (DEFAULT)\n");
                 return defaultValue;
             }
@@ -367,25 +375,28 @@ public class PropertiesManager {
             throw new NullPointerException(e.getMessage() + "\nThe parameter file was not initialized.");
         }
     }
-    
+
     /**
      * Load an int property from the file.
+     *
      * @param key The name of the property
      * @param defaultValue The default value for this property
-     * @return The value loaded from the file or the default value, if it is not specified in the file.
-     * @throws NumberFormatException The loaded value can not be converted to int
+     * @return The value loaded from the file or the default value, if it is not
+     * specified in the file.
+     * @throws NumberFormatException The loaded value can not be converted to
+     * int
      * @throws NullPointerException The parameter file was not initialized
-     * @throws MissingOptionException The parameter is mandatory and it was not found in the parameter file.
+     * @throws MissingOptionException The parameter is mandatory and it was not
+     * found in the parameter file.
      */
-    private int getIntegerProperty(ParameterList key, int defaultValue) 
-                    throws NumberFormatException, NullPointerException, MissingOptionException{
+    private int getIntegerProperty(ParameterList key, int defaultValue)
+            throws NumberFormatException, NullPointerException, MissingOptionException {
         try {
             boolean keyPresent = fileParameters.containsKey(key.name);
             String strValue = keyPresent ? fileParameters.getProperty(key.name).replaceAll("\\s", "") : null;
             if (!keyPresent && key.mandatory) {
                 throw new MissingOptionException("The input parameter (" + key.name + ") was not found");
-            }
-            else if(!keyPresent || strValue.equals("")){
+            } else if (!keyPresent || strValue.equals("")) {
                 loadedParametersLog.append(key.name).append("=").append(defaultValue).append(" (DEFAULT)\n");
                 return defaultValue;
             }
@@ -397,25 +408,28 @@ public class PropertiesManager {
             throw new NullPointerException(e.getMessage() + "\nThe parameter file was not initialized.");
         }
     }
-    
+
     /**
      * Load a long property from the file.
+     *
      * @param key The name of the property
      * @param defaultValue The default value for this property
-     * @return The value loaded from the file or the default value, if it is not specified in the file.
-     * @throws NumberFormatException The loaded value can not be converted to long
+     * @return The value loaded from the file or the default value, if it is not
+     * specified in the file.
+     * @throws NumberFormatException The loaded value can not be converted to
+     * long
      * @throws NullPointerException The parameter file was not initialized
-     * @throws MissingOptionException The parameter is mandatory and it was not found in the parameter file.
+     * @throws MissingOptionException The parameter is mandatory and it was not
+     * found in the parameter file.
      */
-    private long getLongProperty(ParameterList key, long defaultValue) 
-                    throws NumberFormatException, NullPointerException, MissingOptionException{
+    private long getLongProperty(ParameterList key, long defaultValue)
+            throws NumberFormatException, NullPointerException, MissingOptionException {
         try {
             boolean keyPresent = fileParameters.containsKey(key.name);
             String strValue = keyPresent ? fileParameters.getProperty(key.name).replaceAll("\\s", "") : null;
             if (!keyPresent && key.mandatory) {
                 throw new MissingOptionException("The input parameter (" + key.name + ") was not found");
-            }
-            else if(!keyPresent || strValue.equals("")){
+            } else if (!keyPresent || strValue.equals("")) {
                 loadedParametersLog.append(key.name).append("=").append(defaultValue).append(" (DEFAULT)\n");
                 return defaultValue;
             }
@@ -430,22 +444,25 @@ public class PropertiesManager {
 
     /**
      * Load a double property from the file.
+     *
      * @param key The name of the property
      * @param defaultValue The default value for this property
-     * @return The value loaded from the file or the default value, if it is not specified in the file.
-     * @throws NumberFormatException The loaded value can not be converted to double
+     * @return The value loaded from the file or the default value, if it is not
+     * specified in the file.
+     * @throws NumberFormatException The loaded value can not be converted to
+     * double
      * @throws NullPointerException The parameter file was not initialized
-     * @throws MissingOptionException The parameter is mandatory and it was not found in the parameter file.
+     * @throws MissingOptionException The parameter is mandatory and it was not
+     * found in the parameter file.
      */
-    private double getDoubleProperty(ParameterList key, double defaultValue) 
-                    throws NumberFormatException, NullPointerException, MissingOptionException{
+    private double getDoubleProperty(ParameterList key, double defaultValue)
+            throws NumberFormatException, NullPointerException, MissingOptionException {
         try {
             boolean keyPresent = fileParameters.containsKey(key.name);
             String strValue = keyPresent ? fileParameters.getProperty(key.name).replaceAll("\\s", "") : null;
             if (!keyPresent && key.mandatory) {
                 throw new MissingOptionException("The input parameter (" + key.name + ") was not found");
-            }
-            else if(!keyPresent || strValue.equals("")){
+            } else if (!keyPresent || strValue.equals("")) {
                 loadedParametersLog.append(key.name).append("=").append(defaultValue).append(" (DEFAULT)\n");
                 return defaultValue;
             }
@@ -457,28 +474,31 @@ public class PropertiesManager {
             throw new NullPointerException(e.getMessage() + "\nThe parameter file was not initialized.");
         }
     }
-    
+
     /**
      * Load a string property from the file.
+     *
      * @param key The name of the property
      * @param isFile Specifies whether the property relates to a file
-     * @return The value loaded from the file or the default value, if it is not specified in the file.
-     * @throws NumberFormatException The loaded value can not be converted to string
+     * @return The value loaded from the file or the default value, if it is not
+     * specified in the file.
+     * @throws NumberFormatException The loaded value can not be converted to
+     * string
      * @throws NullPointerException The parameter file was not initialized
-     * @throws MissingOptionException The parameter is mandatory and it was not found in the parameter file.
+     * @throws MissingOptionException The parameter is mandatory and it was not
+     * found in the parameter file.
      */
-    private String getStringProperty(ParameterList key, boolean isFile) 
-                    throws NumberFormatException, NullPointerException, MissingOptionException{
+    private String getStringProperty(ParameterList key, boolean isFile)
+            throws NumberFormatException, NullPointerException, MissingOptionException {
         try {
             boolean keyPresent = fileParameters.containsKey(key.name);
             String strValue = keyPresent ? fileParameters.getProperty(key.name).replaceAll("\\s", "") : null;
             if (!keyPresent && key.mandatory) {
                 throw new MissingOptionException("Input parameter not found: " + key.name);
-            }
-            else if(!keyPresent){
+            } else if (!keyPresent) {
                 return null;
             }
-            if(isFile){
+            if (isFile) {
                 strValue = this.preProcessPath(strValue);
             }
             loadedParametersLog.append(key.name).append("=").append(strValue).append("\n");
@@ -488,15 +508,16 @@ public class PropertiesManager {
         }
     }
 
-    private TreeBuilder getIndividualBuilder(boolean isForRandomTrees) throws Exception{
+    private TreeBuilder getIndividualBuilder(boolean isForRandomTrees) throws Exception {
         String builderType;
-        if(isForRandomTrees)
+        if (isForRandomTrees) {
             builderType = getStringProperty(ParameterList.INDIVIDUAL_BUILDER_RAND_TREE, false).toLowerCase();
-        else
+        } else {
             builderType = getStringProperty(ParameterList.INDIVIDUAL_BUILDER_POP, false).toLowerCase();
+        }
         int maxDepth = getIntegerProperty(ParameterList.MAX_TREE_DEPTH, 6);
         int minDepth = getIntegerProperty(ParameterList.MIN_TREE_DEPTH, 2);
-        switch(builderType){
+        switch (builderType) {
             case "grow":
                 return new GrowBuilder(maxDepth, minDepth, functionSet, terminalSet);
             case "full":
@@ -505,74 +526,73 @@ public class PropertiesManager {
                 return new HalfBuilder(maxDepth, minDepth, functionSet, terminalSet);
             default:
                 String msg = isForRandomTrees ? "Error loading the random trees builder. " : "Error loading the individuals' trees builder. ";
-                if(builderType.isEmpty())
+                if (builderType.isEmpty()) {
                     msg += "No builder was specified.";
-                else
+                } else {
                     msg += "There is no builder called " + builderType + ".";
+                }
                 throw new Exception(msg);
         }
     }
-    
+
     public boolean isParameterLoaded() {
         return parameterLoaded;
     }
-    
-    
-    private Breeder[] getBreederObjects() throws Exception{
+
+    private Breeder[] getBreederObjects() throws Exception {
         String[] strBreeders = getStringProperty(ParameterList.BREEDERS_LIST, false).split(",");
         ArrayList<Breeder> breeders = new ArrayList<Breeder>();
-        for(String sBreeder : strBreeders){
-            try{
+        for (String sBreeder : strBreeders) {
+            try {
                 sBreeder = sBreeder.trim();
                 String[] strBreedersSplitted = sBreeder.split("\\*");
                 Class<?> breederClass = Class.forName(strBreedersSplitted[0].trim());
                 Constructor<?> breederConstructor = breederClass.getConstructor(PropertiesManager.class, Double.class);
-                Breeder newBreeder = (Breeder)breederConstructor.newInstance(this, Double.parseDouble(strBreedersSplitted[1].trim()));
+                Breeder newBreeder = (Breeder) breederConstructor.newInstance(this, Double.parseDouble(strBreedersSplitted[1].trim()));
                 breeders.add(newBreeder);
-            }
-            catch(ClassNotFoundException e){
+            } catch (ClassNotFoundException e) {
                 String msg = "Error loading the breeder list. ";
-                if(sBreeder.isEmpty())
+                if (sBreeder.isEmpty()) {
                     msg += "No breeder was specified.";
-                else
+                } else {
                     msg += "It was not possible to parse the input \"" + sBreeder + "\".";
+                }
                 throw new ClassNotFoundException(msg, e);
             }
         }
         return breeders.toArray(new Breeder[breeders.size()]);
     }
-    
+
     /**
-     * 
-     * @return
-     * @throws Exception 
+     *
+     * @return @throws Exception
      */
-    private Terminal[] getTerminalObjects() throws Exception{
+    private Terminal[] getTerminalObjects() throws Exception {
         String[] sTerminals = getStringProperty(ParameterList.TERMINAL_LIST, false).split(",");
         boolean useAllInputs = true;
-        for(String str : sTerminals){
+        for (String str : sTerminals) {
             str = str.trim();
-            if(str.toLowerCase().matches("x\\d+")){
+            if (str.toLowerCase().matches("x\\d+")) {
                 useAllInputs = false;
                 break;
             }
         }
-        ArrayList<Terminal> terminals = new ArrayList<Terminal>();  
-        if(useAllInputs){
-            for(int i = 0; i < dataProducer.getNumInputs(); i++) terminals.add(new Input(i));
-            for(String str : sTerminals){
-                try{
+        ArrayList<Terminal> terminals = new ArrayList<Terminal>();
+        if (useAllInputs) {
+            for (int i = 0; i < dataProducer.getNumInputs(); i++) {
+                terminals.add(new Input(i));
+            }
+            for (String str : sTerminals) {
+                try {
                     str = str.trim();
                     Class<?> terminal = Class.forName(str);
-                    Terminal newTerminal = (Terminal)terminal.newInstance();
+                    Terminal newTerminal = (Terminal) terminal.newInstance();
                     terminals.add(newTerminal);
-                }
-                catch(ClassNotFoundException e){
+                } catch (ClassNotFoundException e) {
                     throw new ClassNotFoundException("Error loading the terminal set. Class " + str + " not found", e);
                 }
             }
-        }
-        else{
+        } else {
             // ************************ TO IMPLEMENT ************************
         }
         return terminals.toArray(new Terminal[terminals.size()]);
@@ -580,90 +600,96 @@ public class PropertiesManager {
 
     /**
      * Get the list of functions from the String read from the file
+     *
      * @return An array of functions
-     * @throws Exception Parameter not found, error while parsing the function type 
+     * @throws Exception Parameter not found, error while parsing the function
+     * type
      */
-    private Function[] getFunctionObjects() throws Exception{
+    private Function[] getFunctionObjects() throws Exception {
         String[] sFunctions = getStringProperty(ParameterList.FUNCTION_LIST, false).split(",");
         ArrayList<Function> functionArray = new ArrayList<Function>();
-       
-        for(String str : sFunctions){
-            try{
+
+        for (String str : sFunctions) {
+            try {
                 str = str.trim();
                 Class<?> function = Class.forName(str);
-                functionArray.add((Function)function.newInstance());
-            }
-            catch(ClassNotFoundException e){
+                functionArray.add((Function) function.newInstance());
+            } catch (ClassNotFoundException e) {
                 throw new ClassNotFoundException("Error loading the function set. Class " + str + " not found", e);
             }
         }
-        
+
         return functionArray.toArray(new Function[functionArray.size()]);
     }
-    
+
     /**
      * Get the population initializer from the file
+     *
      * @return A new population initializer object
-     * @throws Exception Parameter not found, error while parsing the Populator type 
+     * @throws Exception Parameter not found, error while parsing the Populator
+     * type
      */
-    private Populator getPopInitObject() throws Exception{
+    private Populator getPopInitObject() throws Exception {
         String populatorClassname = "";
-        try {            
+        try {
             populatorClassname = getStringProperty(ParameterList.POP_INITIALIZER, false).replaceAll("\\s", "");
             Class<?> populatorClass = Class.forName(populatorClassname);
             Constructor<?> populatorConstructor = populatorClass.getConstructor(PropertiesManager.class);
-            return (Populator)populatorConstructor.newInstance(this);
-        } 
-        catch (ClassNotFoundException e) {
+            return (Populator) populatorConstructor.newInstance(this);
+        } catch (ClassNotFoundException e) {
             String msg = "Error loading the population initializer. ";
-            if(populatorClassname.isEmpty())
+            if (populatorClassname.isEmpty()) {
                 msg += "No population initializer was specified.";
-            else
+            } else {
                 msg += "Class " + populatorClassname + " not found";
+            }
             throw new ClassNotFoundException(msg, e);
-        } 
+        }
     }
-    
+
     /**
      * Get the pipeline object from the file
+     *
      * @return A new pipeline object
-     * @throws Exception Parameter not found, error while parsing the Pipeline type 
+     * @throws Exception Parameter not found, error while parsing the Pipeline
+     * type
      */
-    private Pipeline getPipelineObject() throws Exception{
+    private Pipeline getPipelineObject() throws Exception {
         String populatorClassname = "";
-        try {            
+        try {
             populatorClassname = getStringProperty(ParameterList.POP_PIPELINE, false).replaceAll("\\s", "");
             Class<?> populatorClass = Class.forName(populatorClassname);
             Constructor<?> populatorConstructor = populatorClass.getConstructor();
-            return (Pipeline)populatorConstructor.newInstance();
-        } 
-        catch (ClassNotFoundException e) {
+            return (Pipeline) populatorConstructor.newInstance();
+        } catch (ClassNotFoundException e) {
             String msg = "Error loading the pipeline. ";
-            if(populatorClassname.isEmpty())
+            if (populatorClassname.isEmpty()) {
                 msg += "No pipeline was specified.";
-            else
+            } else {
                 msg += "Class " + populatorClassname + " not found";
+            }
             throw new ClassNotFoundException(msg, e);
-        } 
+        }
     }
-    
+
     /**
      * Get the fitness object from the file
+     *
      * @return A new fintess function
-     * @throws Exception Parameter not found, error while parsing the Fitness type
+     * @throws Exception Parameter not found, error while parsing the Fitness
+     * type
      */
-    private Fitness getFitnessObject() throws Exception{
+    private Fitness getFitnessObject() throws Exception {
         String fitnessClassname = "";
         try {
             fitnessClassname = getStringProperty(ParameterList.FITNESS_FUNCTION, false).replaceAll("\\s", "");
             Class<?> fitnessClass = Class.forName(fitnessClassname);
-            return (Fitness)fitnessClass.newInstance();
-        } 
-        catch (ClassNotFoundException e) {
+            return (Fitness) fitnessClass.newInstance();
+        } catch (ClassNotFoundException e) {
             throw new ClassNotFoundException("Error loading the fitness function. Class " + fitnessClassname + " not found", e);
-        } 
+        }
     }
-    
+
     /**
      * Update the experimental data from the dataProducer
      */
@@ -672,10 +698,9 @@ public class PropertiesManager {
     }
 
     /**
-     * There are tree input options from the CLI: 
-     * - The path for the parameter file
-     * - One or more parameters to overwrite parameters from the file 
-     * - The option of creating a parameter file model on the classpath
+     * There are tree input options from the CLI: - The path for the parameter
+     * file - One or more parameters to overwrite parameters from the file - The
+     * option of creating a parameter file model on the classpath
      */
     private void setOptions() {
         cliOptions = new Options();
@@ -700,7 +725,6 @@ public class PropertiesManager {
     }
 
     //********************************** Public getters **********************************
-    
     public MersenneTwister getRandomGenerator() {
         long newSeed = mersennePRNG.nextLong();
         return new MersenneTwister(newSeed);
@@ -716,6 +740,7 @@ public class PropertiesManager {
 
     /**
      * Return the number of generations to be performed during the evolution
+     *
      * @return The number of generations
      */
     public int getNumGenerations() {
@@ -725,7 +750,7 @@ public class PropertiesManager {
     public int getNumThreads() {
         return numThreads;
     }
-    
+
     public int getRTPoolSize() {
         return rtPoolSize;
     }
@@ -747,17 +772,18 @@ public class PropertiesManager {
     }
 
     /**
-     * Return the mutation step. If the mutation step is defined w.r.t. the standard 
-     * deviation of the training set outputs, we compute the value before returning it.
-     * Otherwise, we return the value obtained from the parameter file.
+     * Return the mutation step. If the mutation step is defined w.r.t. the
+     * standard deviation of the training set outputs, we compute the value
+     * before returning it. Otherwise, we return the value obtained from the
+     * parameter file.
+     *
      * @return The mutation step.
      */
     public double getMutationStep() {
         // The variable mutationStep is obtained from the parameter file
-        if(!mutStepFromSD){
+        if (!mutStepFromSD) {
             return mutationStep;
-        }
-        else{
+        } else {
             return mutationStep * experimentalData.getDataset(DatasetType.TRAINING).getOutputSD();
         }
     }
@@ -773,7 +799,6 @@ public class PropertiesManager {
 //    public double getSemSimThreshold() {
 //        return semSimThres;
 //    }
-    
     public String getOutputDir() {
         return outputDir;
     }
@@ -781,19 +806,19 @@ public class PropertiesManager {
     public String getFilePrefix() {
         return filePrefix;
     }
-    
-    public Fitness geFitnessFunction(){
+
+    public Fitness geFitnessFunction() {
         return fitnessFunction.softClone();
     }
-    
-    public Node getRandomTree(MersenneTwister rnd){
+
+    public Node getRandomTree(MersenneTwister rnd) {
         return randomTreeBuilder.newRootedTree(0, rnd);
     }
-    
-    public Node getNewIndividualTree(MersenneTwister rnd){
+
+    public Node getNewIndividualTree(MersenneTwister rnd) {
         return individualBuilder.newRootedTree(0, rnd);
     }
-    
+
     public Individual[] selectIndividuals(Population population, MersenneTwister rndGenerator, ExperimentalData expData) {
         try {
             Individual[] individuals = new Individual[2];
@@ -806,8 +831,13 @@ public class PropertiesManager {
                 case "tournament":
                     individuals[1] = selectIndividual(population, rndGenerator);
                     break;
-                case "mixed":
-                    individuals[1] = selectIndividual(pop, individuals[0], expData);
+                case "betweeness":
+                    int chance = (int) (Math.random() * 100);
+                    if (chance <= (this.probability * 100)) {
+                        individuals[1] = selectIndividual(pop, individuals[0], expData);
+                    } else{
+                        individuals[1] = selectIndividual(population, rndGenerator);
+                    }
                     break;
             }
             return individuals;
@@ -816,12 +846,12 @@ public class PropertiesManager {
         }
         return null;
     }
-    
-    public Individual selectIndividual(Population population, MersenneTwister rndGenerator){
+
+    public Individual selectIndividual(Population population, MersenneTwister rndGenerator) {
         return individualSelectorTournament.selectIndividual(population, null, rndGenerator, null);
     }
-    
-    public Individual selectIndividual(Population population, Individual individual, ExperimentalData expData){
+
+    public Individual selectIndividual(Population population, Individual individual, ExperimentalData expData) {
         return individualSelectorDimension.selectIndividual(population, individual, null, expData);
     }
 
@@ -838,39 +868,44 @@ public class PropertiesManager {
     }
 
     /**
-     * Return a copy of the function set, to avoid modifications in the original set.
+     * Return a copy of the function set, to avoid modifications in the original
+     * set.
+     *
      * @return A copy of the terminal set
      */
     public Function[] getFunctionSet() {
         Function[] copyFunctionSet = new Function[functionSet.length];
-        for(int i = 0; i < functionSet.length; i++){
+        for (int i = 0; i < functionSet.length; i++) {
             copyFunctionSet[i] = functionSet[i].softClone();
         }
         return copyFunctionSet;
     }
-    
+
     /**
-     * Return a copy of the terminal set, to avoid modifications in the original set.
+     * Return a copy of the terminal set, to avoid modifications in the original
+     * set.
+     *
      * @param rnd Random number generator used during terminal cloning
      * @return A copy of the terminal set
      */
-    public Terminal[] getTerminalSet(MersenneTwister rnd){
+    public Terminal[] getTerminalSet(MersenneTwister rnd) {
         Terminal[] copyTerminalSet = new Terminal[terminalSet.length];
-        for(int i = 0; i < terminalSet.length; i++){
+        for (int i = 0; i < terminalSet.length; i++) {
             copyTerminalSet[i] = terminalSet[i].softClone(rnd);
         }
         return copyTerminalSet;
     }
 
     /**
-     * Generate an array of pseudorandom number generators, used in multithreaded
-     * environments.
+     * Generate an array of pseudorandom number generators, used in
+     * multithreaded environments.
+     *
      * @param size Number of pseudorandom number generators to be generated
      * @return The array of PRNG's
      */
-    public MersenneTwister[] getMersennePRGNArray(int size){
+    public MersenneTwister[] getMersennePRGNArray(int size) {
         MersenneTwister[] generators = new MersenneTwister[size];
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             long seed = mersennePRNG.nextLong();
             generators[i] = new MersenneTwister(seed);
         }
@@ -880,25 +915,26 @@ public class PropertiesManager {
     public Pipeline getPipeline() {
         return pipeline.softClone();
     }
-    
+
     public Populator getPopulationInitializer() {
         return populationInitializer.softClone();
     }
 
     /**
-     * Return a list of sof clones of the breeders list recovered from the 
+     * Return a list of sof clones of the breeders list recovered from the
      * parameter file
+     *
      * @return The list of soft clones of the breeders
      */
     public Breeder[] getBreederList() {
         Breeder[] copyBreeders = new Breeder[breederList.length];
-        for(int i = 0; i < breederList.length; i++){
+        for (int i = 0; i < breederList.length; i++) {
             copyBreeders[i] = breederList[i].softClone(this);
         }
         return copyBreeders;
     }
-    
-    public String getLoadedParametersString(){
+
+    public String getLoadedParametersString() {
         return loadedParametersLog.toString();
     }
 }
