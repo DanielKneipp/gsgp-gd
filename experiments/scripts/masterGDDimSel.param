@@ -11,7 +11,7 @@ tree.build.builder = RHH
 # Builder used to generate random trees for the semantic operators
 tree.build.builder.random.tree = GROW
 # Type of selector used to select individuals for next generations
-pop.ind.selector = MIXED
+pop.ind.selector = BETWEENESS
 # Type of experiment (cross-validation or holdout):
 # - If crossvalidation, uses splited data from a list of files. Use paths to the
 # files in the form /pathToFile/repeatedName#repeatedName, where # indicates 
@@ -53,3 +53,5 @@ breed.list = edu.gsgp.population.operator.GSMBreeder*0.5, edu.gsgp.population.op
 #breed.spread.prob = 0.5
 # Alpha used to compute the effective probability of applying the spreader"
 #breed.spread.alpha = 10
+# Probability of applying the betweeness operator
+pop.ind.selector.betweeness.prob = 0.1
