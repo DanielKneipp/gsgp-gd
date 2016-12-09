@@ -39,7 +39,7 @@ import edu.gsgp.population.treebuilder.TreeBuilder;
 import edu.gsgp.population.fitness.Fitness;
 import edu.gsgp.population.operator.Breeder;
 import edu.gsgp.population.pipeline.Pipeline;
-import edu.gsgp.population.selector.DimensionSelector;
+import edu.gsgp.population.selector.BetweennessSelector;
 import edu.gsgp.population.selector.IndividualSelector;
 import edu.gsgp.population.selector.TournamentSelector;
 import java.io.FileNotFoundException;
@@ -319,7 +319,7 @@ public class PropertiesManager {
             case "betweeness":
                 this.individualSelectorTournament = new TournamentSelector(getIntegerProperty(ParameterList.TOURNAMENT_SIZE, 7));
                 //definir parâmetros do seletor.
-                this.individualSelectorDimension = new DimensionSelector();
+                this.individualSelectorDimension = new BetweennessSelector();
                 break;
             default:
                 throw new Exception("The inidividual selector must be defined.");
