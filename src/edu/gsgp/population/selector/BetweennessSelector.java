@@ -64,6 +64,7 @@ public class BetweennessSelector implements IndividualSelector {
             index++;
         }
         int indexIndividual = (int) (Math.random() * this.indexIndividuals.size());
+        System.out.println("Index selected: " + indexIndividual);
         return this.indexIndividuals.get(indexIndividual);
     }
 
