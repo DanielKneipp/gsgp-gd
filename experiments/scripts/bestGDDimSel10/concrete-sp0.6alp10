@@ -1,0 +1,5 @@
+parent = ~/.gsgp-gd/experiments/scripts/masterGDDimSel10.param
+experiment.data = ~/.gsgp-gd/experiments/data/concrete-#.dat
+experiment.file.prefix = concrete-sp0.6alp10
+breed.spread.prob = 0.6
+breed.spread.alpha = 10
