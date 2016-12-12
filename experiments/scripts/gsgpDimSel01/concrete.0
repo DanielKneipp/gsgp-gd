@@ -1,0 +1,4 @@
+parent = ~/.gsgp-gd/experiments/scripts/masterGSGPDimSel01.param
+experiment.data = ~/.gsgp-gd/experiments/data/concrete-#.dat
+experiment.file.prefix = concrete-sgp
+

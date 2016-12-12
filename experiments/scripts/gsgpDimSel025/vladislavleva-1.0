@@ -1,0 +1,6 @@
+parent = ~/.gsgp-gd/experiments/scripts/masterGSGPDimSel025.param
+experiment.data = ~/.gsgp-gd/experiments/data/vladislavleva-1-#.dat
+experiment.file.prefix = vladislavleva-1-sgp
+
+
+experiment.design = HOLDOUT

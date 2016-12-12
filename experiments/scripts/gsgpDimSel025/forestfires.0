@@ -1,0 +1,4 @@
+parent = ~/.gsgp-gd/experiments/scripts/masterGSGPDimSel025.param
+experiment.data = ~/.gsgp-gd/experiments/data/forestfires-#.dat
+experiment.file.prefix = forestfires-sgp
+

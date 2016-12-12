@@ -1,0 +1,4 @@
+parent = ~/.gsgp-gd/experiments/scripts/masterGSGPDimSel10.param
+experiment.data = ~/.gsgp-gd/experiments/data/cpu-#.dat
+experiment.file.prefix = cpu-sgp
+
