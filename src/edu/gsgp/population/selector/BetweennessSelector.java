@@ -19,30 +19,27 @@ import java.util.List;
  */
 public class BetweennessSelector implements IndividualSelector {
 
-    private List<Integer> indexIndividuals;
-    private int bigger;
-
     public BetweennessSelector() {
 
     }
 
     @Override
-    public synchronized Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData) {
-        this.indexIndividuals = new ArrayList<>();
-        this.bigger = -1;
+    public Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData) {
+        List<Integer> indexIndividuals = new ArrayList<>();
+        Integer bigger = -1;
         double[] outputs = expData.getDataset(Utils.DatasetType.TRAINING).getOutputs();
-        int index = identifyCloserIndividual(population, individual, outputs);
+        int index = identifyCloserIndividual(population, individual, outputs, indexIndividuals, bigger);
         return population.get(index);
     }
 
 //    private int compare(int index1, int index2, int[] dimensions) {
-    private synchronized void compare(int index1, int[] dimensions) {
-        if (this.bigger < dimensions[index1]) {
-            this.indexIndividuals.clear();
-            this.indexIndividuals.add(index1);
-            this.bigger = dimensions[index1];
-        } else if (this.bigger == dimensions[index1]) {
-            this.indexIndividuals.add(index1);
+    private void compare(int index1, int[] dimensions, List<Integer> indexIndividuals, Integer bigger) {
+        if (bigger < dimensions[index1]) {
+            indexIndividuals.clear();
+            indexIndividuals.add(index1);
+            bigger = dimensions[index1];
+        } else if (bigger == dimensions[index1]) {
+            indexIndividuals.add(index1);
         }
 //        if(dimensions[index1] > dimensions[index2]){
 //            return index1;
@@ -50,7 +47,7 @@ public class BetweennessSelector implements IndividualSelector {
 //        return index2;
     }
 
-    private synchronized int identifyCloserIndividual(Population population, Individual individual, double[] outputs) {
+    private int identifyCloserIndividual(Population population, Individual individual, double[] outputs, List<Integer> indexIndividuals, Integer bigger) {
         int[] dimensions = new int[population.size()];
         int index = 0;
         for (Individual ind : population) {
@@ -60,11 +57,11 @@ public class BetweennessSelector implements IndividualSelector {
                 dimensions[index] = (((fitnessSemantic1 < outputs[i]) && (outputs[i] < fitnessSemantic2)) || ((fitnessSemantic2 < outputs[i]) && (outputs[i] < fitnessSemantic1))) ? dimensions[index] + 1 : dimensions[index];
             }
 //            bestIndex = compare(index, bestIndex, dimensions);
-            compare(index, dimensions);
+            compare(index, dimensions, indexIndividuals, bigger);
             index++;
         }
-        int indexIndividual = (int) (Math.random() * this.indexIndividuals.size());
-        return this.indexIndividuals.get(indexIndividual);
+        int indexIndividual = (int) (Math.random() * indexIndividuals.size());
+        return indexIndividuals.get(indexIndividual);
     }
 
 }
