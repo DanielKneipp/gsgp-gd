@@ -27,7 +27,7 @@ public class BetweennessSelector implements IndividualSelector {
     }
 
     @Override
-    public Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData) {
+    public synchronized Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData) {
         this.indexIndividuals = new ArrayList<>();
         this.bigger = -1;
         double[] outputs = expData.getDataset(Utils.DatasetType.TRAINING).getOutputs();
@@ -36,7 +36,7 @@ public class BetweennessSelector implements IndividualSelector {
     }
 
 //    private int compare(int index1, int index2, int[] dimensions) {
-    private void compare(int index1, int[] dimensions) {
+    private synchronized void compare(int index1, int[] dimensions) {
         if (this.bigger < dimensions[index1]) {
             this.indexIndividuals.clear();
             this.indexIndividuals.add(index1);
@@ -50,7 +50,7 @@ public class BetweennessSelector implements IndividualSelector {
 //        return index2;
     }
 
-    private int identifyCloserIndividual(Population population, Individual individual, double[] outputs) {
+    private synchronized int identifyCloserIndividual(Population population, Individual individual, double[] outputs) {
         int[] dimensions = new int[population.size()];
         int index = 0;
         for (Individual ind : population) {
@@ -64,9 +64,6 @@ public class BetweennessSelector implements IndividualSelector {
             index++;
         }
         int indexIndividual = (int) (Math.random() * this.indexIndividuals.size());
-        System.out.println("Index selected: " + indexIndividual + " | " + "Value selected: " + indexIndividuals.get(indexIndividual) + " | " + 
-        "Size of list: " + indexIndividuals.size() + " | " + "First value of list: " + indexIndividuals.get(0) + " | " + "Last value of list: " + 
-        indexIndividuals.get(indexIndividuals.size() - 1));
         return this.indexIndividuals.get(indexIndividual);
     }
 
