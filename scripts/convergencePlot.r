@@ -21,14 +21,14 @@ convergencePlot = function(path, n=NA, plot.on.screen=T, outputPath = path){
   ts.median=apply(ts[2:dim(ts)[2]],2,median)
   tr.mean=apply(tr[2:dim(tr)[2]],2,mean)
   ts.mean=apply(ts[2:dim(ts)[2]],2,mean)
-  plot(tr.median, type='l', ylab="Training RMSE", xlab="Generation", lwd=1, col='blue'); 
+  plot(tr.median, type='l', ylab="Training RMSE", xlab="Generation", lwd=1, col='blue');
   legend("topright", c("Training","Test"), lty=c(1,1), lwd=c(1,1), col=c('blue', 'red'),  bty = "n")
   title(main="Median")
   par(new=T)
   plot(ts.median, type='l', ylab=NA, xlab=NA, lty=1, lwd=1, axes=F, col='red')
   axis(4)
   
-  plot(tr.mean, type='l', ylab="Training RMSE", xlab="Generation", lwd=1, col='blue'); 
+  plot(tr.mean, type='l', ylab="Training RMSE", xlab="Generation", lwd=1, col='blue');
   legend("topright", c("Training","Test"), lty=c(1,1), lwd=c(1,1), col=c('blue', 'red'), bty = "n")
   title(main="Mean")
   par(new=T)
