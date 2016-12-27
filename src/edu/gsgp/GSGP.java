@@ -14,6 +14,7 @@ import edu.gsgp.population.Individual;
 import edu.gsgp.experiment.config.PropertiesManager;
 import edu.gsgp.population.populator.Populator;
 import edu.gsgp.population.pipeline.Pipeline;
+import edu.gsgp.utils.StatisticsDimension;
 
 /**
  * @author Luiz Otavio Vilas Boas Oliveira
@@ -46,7 +47,7 @@ public class GSGP {
         pipe.setup(properties, statistics, expData, rndGenerator);
         
         statistics.addGenerationStatistic(population);
-        
+        StatisticsDimension statisticsDim = StatisticsDimension.getInstance();
         for(int i = 0; i < properties.getNumGenerations() && !canStop; i++){
             System.out.println("Generation " + (i+1) + ":");
                         
@@ -59,7 +60,9 @@ public class GSGP {
             population = newPopulation;
             
             statistics.addGenerationStatistic(population);
+            statisticsDim.incrementGeneration();
         }
+        statisticsDim.writeInfoDimension(properties.getOutputDir(), properties.getFilePrefix());
         statistics.finishEvolution(population.getBestIndividual());
     }
 

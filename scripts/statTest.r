@@ -44,8 +44,8 @@ statTest = function(p1, p2, sort.1 = T, sort.2 = T, paired = T, test = 'wilcoxon
 # This function is very specific. It list two folders and, following some guidelines, compare the similar 
 # folders (with GSGP results) in which it runs a Wilcoxon test
 statTestBetweenFolders = function(p1, p2, sort.1 = T, sort.2 = T, 
-                                 paired = T, ds.names, test='wilcoxon', type='test'){
-  # Get the dataset folders
+                                 paired = T, ds.names, test='wilcoxon', type='training'){  
+# Get the dataset folders
   p1.list=list.dirs(p1, recursive = F, full.names = T)
   p2.list=list.dirs(p2, recursive = F, full.names = T)
   for(ds in ds.names){
@@ -58,3 +58,6 @@ statTestBetweenFolders = function(p1, p2, sort.1 = T, sort.2 = T,
     }
   } 
 }
+ds.names=list(c("concrete-sgp"), c("cpu-sgp"), c("energyHeating-sgp"), c("forestfires-sgp"), c("keijzer-6-sgp"), c("vladislavleva-1-sgp"))
+statTestBetweenFolders("/home/bruno/Área de Trabalho/out9.1/masterGSGP/", "/home/bruno/Área de Trabalho/out9.1/masterGSGPDimSel025/", sort.1 = T, sort.2 = T, paired = T, ds.names, test='wilcoxon', type='training')
+#statTest("/home/bruno/Área de Trabalho/out9.1/masterGSGP/concrete-sgp/", "/home/bruno/Área de Trabalho/out9.1/masterGSGPDimSel10/concrete-sgp/", sort.1 = T, sort.2 = T, paired = T, test = 'wilcoxon', type='test')

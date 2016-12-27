@@ -7,7 +7,6 @@
 package edu.gsgp.utils;
 
 import edu.gsgp.experiment.data.ExperimentalData;
-import edu.gsgp.population.Individual;
 import edu.gsgp.population.Population;
 import edu.gsgp.population.Individual;
 
@@ -125,7 +124,7 @@ public class Statistics {
         // Ignore the time elapsed to store the statistics
         elapsedTime += System.nanoTime() - methodTime;
     }
-
+    
     public void finishEvolution(Individual bestIndividual) {
         elapsedTime = System.nanoTime() - elapsedTime;
         // Convert nanosecs to secs

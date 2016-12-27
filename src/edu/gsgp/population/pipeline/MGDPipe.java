@@ -10,6 +10,8 @@ import edu.gsgp.population.Individual;
 import edu.gsgp.population.Population;
 import edu.gsgp.population.operator.Breeder;
 import edu.gsgp.population.operator.MGDBreeder;
+import edu.gsgp.utils.Statistics;
+import edu.gsgp.utils.StatisticsDimension;
 
 /**
  *
@@ -24,6 +26,7 @@ public class MGDPipe extends Pipeline{
     
     @Override
     public Population evolvePopulation(Population originalPop, ExperimentalData expData, int size) {
+        StatisticsDimension statistics = StatisticsDimension.getInstance();
         MGDBreeder spreader = new MGDBreeder(properties, 0.0);
         spreader.setup(originalPop, expData, currentGen++);
         Population newPopulation = new Population();
@@ -60,6 +63,7 @@ public class MGDPipe extends Pipeline{
 //                newInd = spreader.generateIndividual(rndGenerator, expData);
 //            }
             newPopulation.add(newInd);
+            statistics.clear();
         }        
         return newPopulation;
     }

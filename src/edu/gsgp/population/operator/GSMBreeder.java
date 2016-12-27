@@ -15,7 +15,6 @@ import edu.gsgp.experiment.data.Instance;
 import edu.gsgp.experiment.config.PropertiesManager;
 import edu.gsgp.nodes.Node;
 import edu.gsgp.population.Individual;
-import edu.gsgp.population.Individual;
 import edu.gsgp.population.fitness.Fitness;
 import java.math.BigInteger;
 

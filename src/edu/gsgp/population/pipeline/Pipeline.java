@@ -12,6 +12,7 @@ import edu.gsgp.experiment.data.ExperimentalData;
 import edu.gsgp.experiment.config.PropertiesManager;
 import edu.gsgp.population.Population;
 import edu.gsgp.population.operator.Breeder;
+import edu.gsgp.utils.StatisticsDimension;
 
 /**
  *

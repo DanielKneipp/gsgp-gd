@@ -42,6 +42,8 @@ import edu.gsgp.population.pipeline.Pipeline;
 import edu.gsgp.population.selector.BetweennessSelector;
 import edu.gsgp.population.selector.IndividualSelector;
 import edu.gsgp.population.selector.TournamentSelector;
+import edu.gsgp.utils.StatisticsDimension;
+import edu.gsgp.utils.Utils;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 
@@ -826,17 +828,24 @@ public class PropertiesManager {
             Population pop = new Population();
             pop.addAll(population);
             pop.remove(individuals[0]);
+            StatisticsDimension statistics = StatisticsDimension.getInstance();
 //            String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
             switch (this.individualSelector) {
                 case "tournament":
+                    statistics.addGeneration(StatisticsDimension.StatsTypeDimension.DIM_TOURNAMENT);
+                    statistics.addInfoTournament(String.valueOf(-1));
                     individuals[1] = selectIndividual(population, rndGenerator);
+                    countDimension(statistics, individuals);
                     break;
                 case "betweeness":
                     int chance = (int) (Math.random() * 100);
                     if (chance <= (this.probability * 100)) {
                         individuals[1] = selectIndividual(pop, individuals[0], expData);
-                    } else{
+                    } else {
+                        statistics.addGeneration(StatisticsDimension.StatsTypeDimension.DIM_TOURNAMENT);
+                        statistics.addInfoTournament(String.valueOf(-1));
                         individuals[1] = selectIndividual(population, rndGenerator);
+                        countDimension(statistics, individuals);
                     }
                     break;
             }
@@ -845,6 +854,21 @@ public class PropertiesManager {
             System.err.println("The inidividual selector must be defined.");
         }
         return null;
+    }
+
+    private void countDimension(StatisticsDimension statistic, Individual[] individuals) {
+        double[] outputs = experimentalData.getDataset(Utils.DatasetType.TRAINING).getOutputs();
+        int numDim = 0;
+        for (int i = 0; i < outputs.length; i++) {
+            double fitnessSemantic1 = individuals[0].getFitnessFunction().getSemantics(Utils.DatasetType.TRAINING)[i];
+            double fitnessSemantic2 = individuals[1].getFitnessFunction().getSemantics(Utils.DatasetType.TRAINING)[i];
+            if(((fitnessSemantic1 < outputs[i]) && (outputs[i] < fitnessSemantic2)) || ((fitnessSemantic2 < outputs[i]) && (outputs[i] < fitnessSemantic1))){
+                numDim++;
+                statistic.addInfoTournament(String.valueOf(i));
+            }
+        }
+        statistic.updateInfoTournament(String.valueOf(numDim), 1);
+        statistic.asWritableString(StatisticsDimension.StatsTypeDimension.DIM_TOURNAMENT);
     }
 
     public Individual selectIndividual(Population population, MersenneTwister rndGenerator) {
