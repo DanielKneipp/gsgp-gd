@@ -10,6 +10,14 @@ import edu.gsgp.experiment.data.ExperimentalData;
 import edu.gsgp.population.Population;
 import edu.gsgp.population.Individual;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 /**
  * @author Luiz Otavio Vilas Boas Oliveira
  * http://homepages.dcc.ufmg.br/~luizvbo/ 
@@ -26,7 +34,9 @@ public class Statistics {
         ELAPSED_TIME("elapsedTime.csv"),
         LOADED_PARAMETERS("loadedParams.txt"),
         MDD_AVG("mddAverage.csv"),
-        MDD_SD("mddStdDev.csv");
+        MDD_SD("mddStdDev.csv"),
+        DIM_TOURNAMENT("dimensionTournament.csv"),
+        DIM_BETWEENNESS("dimensionBetweenness.csv");
         
         private final String filePath;
 
@@ -34,6 +44,21 @@ public class Statistics {
             this.filePath = filePath;
         }
         
+        public String getPath(){
+            return filePath;
+        }
+    }
+
+    public enum StatsTypeDimension{
+        DIM_TOURNAMENT("dimensionTournament.csv"),
+        DIM_BETWEENNESS("dimensionBetweenness.csv");
+
+        private final String filePath;
+
+        private StatsTypeDimension(String filePath) {
+            this.filePath = filePath;
+        }
+
         public String getPath(){
             return filePath;
         }
@@ -51,8 +76,24 @@ public class Statistics {
     
     private double[] bestTrainingSemantics;
     private double[] bestTestSemantics;
+
+    protected String dimTournament;
+    protected String dimBetweenness;
+
+    protected List<String> dimensionTournament;
+    protected List<String> dimensionBetweenness;
         
     protected int currentGeneration;
+
+    public int getCurrentRepetition() {
+        return currentRepetition;
+    }
+
+    public void setCurrentRepetition(int currentRepetition) {
+        this.currentRepetition = currentRepetition;
+    }
+
+    protected int currentRepetition;
     // ========================= ADDED FOR GECCO PAPER =========================
 //    private ArrayList<int[]> trGeTarget;
 //    private ArrayList<int[]> tsGeTarget;
@@ -66,6 +107,11 @@ public class Statistics {
         sdMDD = new float[numGenerations+1];
         currentGeneration = 0;
         this.expData = expData;
+        dimensionTournament = new ArrayList<>();
+        dimensionBetweenness = new ArrayList<>();
+        this.dimTournament = "";
+        this.dimBetweenness = "";
+        this.currentRepetition = 0;
         
         // ======================= ADDED FOR GECCO PAPER =======================
 //        trGeTarget = new ArrayList<>();
@@ -154,6 +200,20 @@ public class Statistics {
                 return null;
         }
     }
+
+    public void genDimsStatsStr(StatsTypeDimension type) {
+        switch(type){
+            case DIM_TOURNAMENT:
+                this.dimTournament += concatenateArrayDimInfo(dimensionTournament);
+                break;
+            case DIM_BETWEENNESS:
+                this.dimBetweenness += concatenateArrayDimInfo(dimensionBetweenness);
+                break;
+            default:
+                System.out.println("There isn't this type!!!");
+                break;
+        }
+    }
     
     private String concatenateArray(String[] stringArray){
         StringBuilder str = new StringBuilder();
@@ -161,6 +221,20 @@ public class Statistics {
             str.append(stringArray[i] + ",");
         }
         str.append(stringArray[stringArray.length-1]);        
+        return str.toString();
+    }
+
+    private String concatenateArrayDimInfo(List<String> stringArray){
+        StringBuilder str = new StringBuilder();
+        if (stringArray.isEmpty()) {
+            stringArray.add(String.valueOf(this.currentRepetition));
+            stringArray.add(String.valueOf(this.currentGeneration));
+        }
+        for (String strArray : stringArray) {
+            str.append(strArray).append(",");
+        }
+        str.replace((str.length() - 1), str.length(), "");
+        str.append("\n");
         return str.toString();
     }
     
@@ -239,6 +313,109 @@ public class Statistics {
         meanMDD[currentGeneration] = mean;
         sdMDD[currentGeneration] = (float)sd;
     }
-    
-    
+
+    public void addInfoTournament(String value){
+        if (this.dimensionTournament.isEmpty()) {
+            this.dimensionTournament.add(String.valueOf(this.currentRepetition));
+            this.dimensionTournament.add(String.valueOf(this.currentGeneration));
+        }
+        this.dimensionTournament.add(value);
+    }
+
+    public void addInfoBetweenness(String value){
+        if (this.dimensionBetweenness.isEmpty()) {
+            this.dimensionBetweenness.add(String.valueOf(this.currentRepetition));
+            this.dimensionBetweenness.add(String.valueOf(this.currentGeneration));
+        }
+        this.dimensionBetweenness.add(value);
+    }
+
+    public void updateInfoTournament(String value, int index){
+        this.dimensionTournament.set(index, value);
+    }
+
+    public void updateInfoBetweenness(String value, int index){
+        this.dimensionBetweenness.set(index, value);
+    }
+
+    public void clearDimsStats(){
+        this.dimensionTournament.clear();
+        this.dimensionBetweenness.clear();
+    }
+
+    public void clearDimsStrs() {
+        this.dimTournament = "";
+        this.dimBetweenness = "";
+    }
+
+    public boolean isDimmensionEmpty(StatsTypeDimension type){
+        switch(type){
+            case DIM_TOURNAMENT:
+                return this.dimensionTournament.isEmpty();
+            case DIM_BETWEENNESS:
+                return this.dimensionBetweenness.isEmpty();
+            default:
+                return false;
+        }
+    }
+
+    public boolean isDimmensionStrEmty(StatsTypeDimension type){
+        switch(type){
+            case DIM_TOURNAMENT:
+                return Objects.equals(this.dimTournament, "");
+            case DIM_BETWEENNESS:
+                return Objects.equals(this.dimBetweenness, "");
+            default:
+                return false;
+        }
+    }
+
+    public synchronized void writeInfoDimension(String outputPath,
+                                   String outputPrefix) throws Exception {
+
+        StatsTypeDimension writeableStats[] = {StatsTypeDimension.DIM_TOURNAMENT,
+                StatsTypeDimension.DIM_BETWEENNESS};
+
+        for (StatsTypeDimension type : writeableStats) {
+            if (!isDimmensionStrEmty(type)) {
+                writeOnFile(outputPath, outputPrefix, getDimsStatsString(type) + "\n", type);
+            }
+        }
+    }
+
+    private String getDimsStatsString(StatsTypeDimension type) {
+        switch(type){
+            case DIM_TOURNAMENT:
+                return this.dimTournament;
+            case DIM_BETWEENNESS:
+                return this.dimBetweenness;
+            default:
+                return null;
+        }
+    }
+
+    private void writeOnFile(String outputPath,
+                             String outputPrefix,
+                             String info,
+                             StatsTypeDimension statsType) throws NullPointerException, SecurityException, IOException {
+        File outputDir = getOutputDir(outputPath);
+        outputDir = new File(outputDir.getAbsolutePath() + File.separator + outputPrefix);
+        outputDir.mkdirs();
+        // Object to write results on file
+        BufferedWriter bw;
+        bw = new BufferedWriter(new FileWriter(outputDir.getAbsolutePath() + File.separator + statsType.getPath(), true));
+        bw.write(info);
+        bw.close();
+    }
+
+    protected static File getOutputDir(String outputPath){
+        File outputDir;
+        if(!outputPath.equals("")){
+            outputDir = new File(outputPath);
+        }
+        else{
+            outputDir = new File(System.getProperty("user.dir"));
+        }
+        return outputDir;
+    }
 }

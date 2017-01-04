@@ -26,7 +26,7 @@ public class MGDPipe extends Pipeline{
     
     @Override
     public Population evolvePopulation(Population originalPop, ExperimentalData expData, int size) {
-        StatisticsDimension statistics = StatisticsDimension.getInstance();
+//        StatisticsDimension statistics = StatisticsDimension.getInstance();
         MGDBreeder spreader = new MGDBreeder(properties, 0.0);
         spreader.setup(originalPop, expData, currentGen++);
         Population newPopulation = new Population();
@@ -57,13 +57,13 @@ public class MGDPipe extends Pipeline{
                 }
                 probabilitySum += breeder.getProbability();
             }
-            Individual newInd = selectedBreeder.generateIndividual(rndGenerator, expData);
+            Individual newInd = selectedBreeder.generateIndividual(rndGenerator, expData, this.stats);
 //            floatDice = rndGenerator.nextDouble();
 //            if(floatDice < spreader.getEffectiveProb()){
 //                newInd = spreader.generateIndividual(rndGenerator, expData);
 //            }
             newPopulation.add(newInd);
-            statistics.clear();
+//            statistics.clear();
         }        
         return newPopulation;
     }

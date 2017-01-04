@@ -15,7 +15,7 @@ import edu.gsgp.experiment.config.Experimenter;
  * Copyright (C) 20014, Federal University of Minas Gerais, Belo Horizonte, Brazil
  */
 public class Main {
-    public static void main(String args[]){
+    public static void main(String args[]) throws  Exception{
         try{
             long startTime = System.currentTimeMillis();
             

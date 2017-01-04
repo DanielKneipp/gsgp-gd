@@ -11,6 +11,7 @@ import edu.gsgp.experiment.data.ExperimentalData;
 import edu.gsgp.experiment.config.PropertiesManager;
 import edu.gsgp.population.Individual;
 import edu.gsgp.population.Population;
+import edu.gsgp.utils.Statistics;
 
 /**
  * @author Luiz Otavio Vilas Boas Oliveira
@@ -36,7 +37,7 @@ public abstract class Breeder{
     
     public abstract Breeder softClone(PropertiesManager properties);
     
-    public abstract Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData);
+    public abstract Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData, Statistics stats);
     
     public void setup(Population originalPopulation, ExperimentalData expData){
         this.originalPopulation = originalPopulation;

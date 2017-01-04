@@ -16,6 +16,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
+
+import edu.gsgp.utils.Statistics;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -821,31 +823,31 @@ public class PropertiesManager {
         return individualBuilder.newRootedTree(0, rnd);
     }
 
-    public Individual[] selectIndividuals(Population population, MersenneTwister rndGenerator, ExperimentalData expData) {
+    public Individual[] selectIndividuals(Population population, MersenneTwister rndGenerator, ExperimentalData expData, Statistics stats) {
         try {
             Individual[] individuals = new Individual[2];
-            individuals[0] = selectIndividual(population, rndGenerator);
+            individuals[0] = selectIndividual(population, rndGenerator, stats);
             Population pop = new Population();
             pop.addAll(population);
             pop.remove(individuals[0]);
-            StatisticsDimension statistics = StatisticsDimension.getInstance();
+//            StatisticsDimension statistics = StatisticsDimension.getInstance();
 //            String value = getStringProperty(ParameterList.INDIVIDUAL_SELECTOR, false).toLowerCase();
             switch (this.individualSelector) {
                 case "tournament":
-                    statistics.addGeneration(StatisticsDimension.StatsTypeDimension.DIM_TOURNAMENT);
-                    statistics.addInfoTournament(String.valueOf(-1));
-                    individuals[1] = selectIndividual(population, rndGenerator);
-                    countDimension(statistics, individuals);
+//                    statistics.addGeneration(StatisticsDimension.StatsTypeDimension.DIM_TOURNAMENT);
+//                    statistics.addInfoTournament(String.valueOf(-1));
+                    individuals[1] = selectIndividual(population, rndGenerator, stats);
+                    countDimension(stats, individuals, expData);
                     break;
                 case "betweeness":
                     int chance = (int) (Math.random() * 100);
                     if (chance <= (this.probability * 100)) {
-                        individuals[1] = selectIndividual(pop, individuals[0], expData);
+                        individuals[1] = selectIndividual(pop, individuals[0], expData, stats);
                     } else {
-                        statistics.addGeneration(StatisticsDimension.StatsTypeDimension.DIM_TOURNAMENT);
-                        statistics.addInfoTournament(String.valueOf(-1));
-                        individuals[1] = selectIndividual(population, rndGenerator);
-                        countDimension(statistics, individuals);
+//                        statistics.addGeneration(StatisticsDimension.StatsTypeDimension.DIM_TOURNAMENT);
+//                        statistics.addInfoTournament(String.valueOf(-1));
+                        individuals[1] = selectIndividual(population, rndGenerator, stats);
+                        countDimension(stats, individuals, expData);
                     }
                     break;
             }
@@ -856,27 +858,30 @@ public class PropertiesManager {
         return null;
     }
 
-    private void countDimension(StatisticsDimension statistic, Individual[] individuals) {
-        double[] outputs = experimentalData.getDataset(Utils.DatasetType.TRAINING).getOutputs();
+    private void countDimension(Statistics statistic, Individual[] individuals, ExperimentalData expData) {
+        // Must be expData because this.experimentalData points to the last experimental data loaded and
+        // not to the current execution.
+        double[] outputs = expData.getDataset(Utils.DatasetType.TRAINING).getOutputs();
         int numDim = 0;
         for (int i = 0; i < outputs.length; i++) {
             double fitnessSemantic1 = individuals[0].getFitnessFunction().getSemantics(Utils.DatasetType.TRAINING)[i];
             double fitnessSemantic2 = individuals[1].getFitnessFunction().getSemantics(Utils.DatasetType.TRAINING)[i];
             if(((fitnessSemantic1 < outputs[i]) && (outputs[i] < fitnessSemantic2)) || ((fitnessSemantic2 < outputs[i]) && (outputs[i] < fitnessSemantic1))){
                 numDim++;
-                statistic.addInfoTournament(String.valueOf(i));
+//                statistic.addInfoTournament(String.valueOf(i));
             }
         }
-        statistic.updateInfoTournament(String.valueOf(numDim), 1);
-        statistic.asWritableString(StatisticsDimension.StatsTypeDimension.DIM_TOURNAMENT);
+//        statistic.updateInfoTournament(String.valueOf(numDim), 1);
+        statistic.addInfoTournament(String.valueOf(numDim));
+//        statistic.asWritableString(StatisticsDimension.StatsTypeDimension.DIM_TOURNAMENT);
     }
 
-    public Individual selectIndividual(Population population, MersenneTwister rndGenerator) {
-        return individualSelectorTournament.selectIndividual(population, null, rndGenerator, null);
+    public Individual selectIndividual(Population population, MersenneTwister rndGenerator, Statistics stats) {
+        return individualSelectorTournament.selectIndividual(population, null, rndGenerator, null, stats);
     }
 
-    public Individual selectIndividual(Population population, Individual individual, ExperimentalData expData) {
-        return individualSelectorDimension.selectIndividual(population, individual, null, expData);
+    public Individual selectIndividual(Population population, Individual individual, ExperimentalData expData, Statistics stats) {
+        return individualSelectorDimension.selectIndividual(population, individual, null, expData, stats);
     }
 
     public Function getRandomFunction(MersenneTwister rnd) {

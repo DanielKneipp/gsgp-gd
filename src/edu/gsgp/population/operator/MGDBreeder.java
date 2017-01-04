@@ -7,6 +7,7 @@
 package edu.gsgp.population.operator;
 
 import edu.gsgp.utils.MersenneTwister;
+import edu.gsgp.utils.Statistics;
 import edu.gsgp.utils.Utils.DatasetType;
 import edu.gsgp.experiment.data.Dataset;
 import edu.gsgp.experiment.data.ExperimentalData;
@@ -118,8 +119,8 @@ public class MGDBreeder extends Breeder{
     
     
     @Override
-    public Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData) {
-        Individual p = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
+    public Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData, Statistics stats) {
+        Individual p = (Individual)properties.selectIndividual(originalPopulation, rndGenerator, stats);
         return generateIndividual(rndGenerator, expData, p);
     }
     

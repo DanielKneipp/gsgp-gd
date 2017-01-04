@@ -7,6 +7,7 @@
 package edu.gsgp.population.operator;
 
 import edu.gsgp.utils.MersenneTwister;
+import edu.gsgp.utils.Statistics;
 import edu.gsgp.utils.Utils;
 import edu.gsgp.utils.Utils.DatasetType;
 import edu.gsgp.experiment.data.Dataset;
@@ -57,8 +58,8 @@ public class GSMBreeder extends Breeder{
     }
 
     @Override
-    public Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData) {
-        Individual p = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
+    public Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData, Statistics stats) {
+        Individual p = (Individual)properties.selectIndividual(originalPopulation, rndGenerator, stats);
         Node rt1 = properties.getRandomTree(rndGenerator);
         Node rt2 = properties.getRandomTree(rndGenerator);
         BigInteger numNodes = p.getNumNodes().add(new BigInteger(rt1.getNumNodes()+"")).

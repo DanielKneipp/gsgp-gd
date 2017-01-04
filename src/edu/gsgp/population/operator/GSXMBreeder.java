@@ -7,6 +7,7 @@
 package edu.gsgp.population.operator;
 
 import edu.gsgp.utils.MersenneTwister;
+import edu.gsgp.utils.Statistics;
 import edu.gsgp.utils.Utils;
 import edu.gsgp.utils.Utils.DatasetType;
 import edu.gsgp.experiment.data.Dataset;
@@ -62,11 +63,11 @@ public class GSXMBreeder extends Breeder{
     }
 
     @Override
-    public Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData) {
-        Individual[] individuals = properties.selectIndividuals(originalPopulation, rndGenerator, expData);
+    public Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData, Statistics stats) {
+        Individual[] individuals = properties.selectIndividuals(originalPopulation, rndGenerator, expData, stats);
 //        Individual p1 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
 //        Individual p2 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
-        while(individuals[0].equals(individuals[1])) individuals[1] = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
+        while(individuals[0].equals(individuals[1])) individuals[1] = (Individual)properties.selectIndividual(originalPopulation, rndGenerator, stats);
         Node rt = properties.getRandomTree(rndGenerator);
         BigInteger numNodes = individuals[0].getNumNodes().add(individuals[1].getNumNodes()).add(new BigInteger(rt.getNumNodes() + "")).add(BigInteger.ONE);
         Fitness fitnessFunction = evaluate(individuals[0], individuals[1], rt, expData);

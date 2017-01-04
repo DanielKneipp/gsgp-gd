@@ -10,6 +10,7 @@ import edu.gsgp.experiment.data.ExperimentalData;
 import edu.gsgp.utils.MersenneTwister;
 import edu.gsgp.population.Individual;
 import edu.gsgp.population.Population;
+import edu.gsgp.utils.Statistics;
 
 /**
  * @author Luiz Otavio Vilas Boas Oliveira
@@ -18,5 +19,5 @@ import edu.gsgp.population.Population;
  * Copyright (C) 20014, Federal University of Minas Gerais, Belo Horizonte, Brazil
  */
 public interface IndividualSelector {
-    public Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData);
+    public Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData, Statistics stats);
 }

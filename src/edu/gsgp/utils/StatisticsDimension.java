@@ -38,23 +38,43 @@ public class StatisticsDimension {
     
     protected List<String> dimensionTournament;
     protected List<String> dimensionBetweenness;
+
+    public int getCurrentGen() {
+        return currentGen;
+    }
+
+    public void setCurrentGen(int currentGen) {
+        this.currentGen = currentGen;
+    }
+
     protected int currentGen;
+
+    public int getCurrentExp() {
+        return currentExp;
+    }
+
+    public void setCurrentExp(int currentExp) {
+        this.currentExp = currentExp;
+    }
+
+    protected int currentExp;
     private static StatisticsDimension instance;
     
-    private StatisticsDimension(int currentGen) {
+    public StatisticsDimension() {
         dimensionTournament = new ArrayList<>();
         dimensionBetweenness = new ArrayList<>();
         this.dimTournament = new String();
         this.dimBetweenness = new String();
-        this.currentGen = currentGen;
+        this.currentGen = 0;
+        this.currentExp = 0;
     }
     
-    public static StatisticsDimension getInstance(){
+    /*public static StatisticsDimension getInstance(){
         if(instance == null){
             instance = new StatisticsDimension(0);
         }
         return instance;
-    }
+    }*/
     
     public void addInfoTournament(String value){
         this.dimensionTournament.add(value);

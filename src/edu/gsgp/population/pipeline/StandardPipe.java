@@ -37,7 +37,7 @@ public class StandardPipe extends Pipeline{
                 }
                 probabilitySum += breeder.getProbability();
             }
-            newPopulation.add(selectedBreeder.generateIndividual(rndGenerator, expData));
+            newPopulation.add(selectedBreeder.generateIndividual(rndGenerator, expData, this.stats));
         }        
         return newPopulation;
     }

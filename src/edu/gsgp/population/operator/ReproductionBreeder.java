@@ -10,6 +10,7 @@ import edu.gsgp.utils.MersenneTwister;
 import edu.gsgp.experiment.data.ExperimentalData;
 import edu.gsgp.experiment.config.PropertiesManager;
 import edu.gsgp.population.Individual;
+import edu.gsgp.utils.Statistics;
 
 /**
  * @author Luiz Otavio Vilas Boas Oliveira
@@ -28,8 +29,8 @@ public class ReproductionBreeder extends Breeder {
     }
 
     @Override
-    public Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData) {
-        return properties.selectIndividual(originalPopulation, rndGenerator).clone();
+    public Individual generateIndividual(MersenneTwister rndGenerator, ExperimentalData expData, Statistics stats) {
+        return properties.selectIndividual(originalPopulation, rndGenerator, stats).clone();
     }
     
     @Override

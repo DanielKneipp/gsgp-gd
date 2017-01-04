@@ -25,13 +25,18 @@ import edu.gsgp.utils.StatisticsDimension;
 public class GSGP {
     private final PropertiesManager properties;
     private final Statistics statistics;
+//    private final StatisticsDimension statisticsDim;
     private final ExperimentalData expData;
     private final MersenneTwister rndGenerator;
+    private final int currentExec;
 
-    public GSGP(PropertiesManager properties, ExperimentalData expData) throws Exception{
+    public GSGP(PropertiesManager properties, ExperimentalData expData, int execution) throws Exception{
         this.properties = properties;
         this.expData = expData;
+        this.currentExec = execution;
         statistics = new Statistics(properties.getNumGenerations(), expData);
+        statistics.setCurrentRepetition(execution);
+//        statisticsDim = new StatisticsDimension();
         rndGenerator = properties.getRandomGenerator();
     }
     
@@ -47,9 +52,10 @@ public class GSGP {
         pipe.setup(properties, statistics, expData, rndGenerator);
         
         statistics.addGenerationStatistic(population);
-        StatisticsDimension statisticsDim = StatisticsDimension.getInstance();
+//        statisticsDim.setCurrentExp(this.currentExec);
         for(int i = 0; i < properties.getNumGenerations() && !canStop; i++){
             System.out.println("Generation " + (i+1) + ":");
+//            statisticsDim.setCurrentGen(i);
                         
             // Evolve a new Population
             Population newPopulation = pipe.evolvePopulation(population, expData, properties.getPopulationSize()-1);
@@ -58,11 +64,15 @@ public class GSGP {
             Individual bestIndividual = newPopulation.getBestIndividual();
             if(bestIndividual.isBestSolution(properties.getMinError())) canStop = true;
             population = newPopulation;
-            
+
+            statistics.genDimsStatsStr(Statistics.StatsTypeDimension.DIM_BETWEENNESS);
+            statistics.genDimsStatsStr(Statistics.StatsTypeDimension.DIM_TOURNAMENT);
+            statistics.clearDimsStats();
             statistics.addGenerationStatistic(population);
-            statisticsDim.incrementGeneration();
+//            statisticsDim.incrementGeneration();
         }
-        statisticsDim.writeInfoDimension(properties.getOutputDir(), properties.getFilePrefix());
+//        statisticsDim.writeInfoDimension(properties.getOutputDir(), properties.getFilePrefix());
+        statistics.writeInfoDimension(properties.getOutputDir(), properties.getFilePrefix());
         statistics.finishEvolution(population.getBestIndividual());
     }
 
