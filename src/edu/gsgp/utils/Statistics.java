@@ -370,7 +370,7 @@ public class Statistics {
         }
     }
 
-    public synchronized void writeInfoDimension(String outputPath,
+    public void writeInfoDimension(String outputPath,
                                    String outputPrefix) throws Exception {
 
         StatsTypeDimension writeableStats[] = {StatsTypeDimension.DIM_TOURNAMENT,

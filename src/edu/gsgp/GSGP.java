@@ -72,7 +72,6 @@ public class GSGP {
 //            statisticsDim.incrementGeneration();
         }
 //        statisticsDim.writeInfoDimension(properties.getOutputDir(), properties.getFilePrefix());
-        statistics.writeInfoDimension(properties.getOutputDir(), properties.getFilePrefix());
         statistics.finishEvolution(population.getBestIndividual());
     }
 

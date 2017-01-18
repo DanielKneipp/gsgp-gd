@@ -64,6 +64,7 @@ public class Experimenter {
             DataWriter.writeResults(parameters.getOutputDir(), 
                     parameters.getFilePrefix(), 
                     gsgpInstance.getStatistics(), id);
+            gsgpInstance.getStatistics().writeInfoDimension(parameters.getOutputDir(), parameters.getFilePrefix());
         }
         
         @Override
