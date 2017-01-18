@@ -20,7 +20,7 @@ import edu.gsgp.utils.Statistics;
  * luiz.vbo@gmail.com
  * Copyright (C) 20014, Federal University of Minas Gerais, Belo Horizonte, Brazil
  */
-public class TournamentSelector implements IndividualSelector{
+public class TournamentSelector extends IndividualSelector{
     private int tournamentSize;
 
     public TournamentSelector(int tournamentSize) {

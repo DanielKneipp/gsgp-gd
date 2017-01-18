@@ -18,6 +18,14 @@ import edu.gsgp.utils.Statistics;
  * luiz.vbo@gmail.com
  * Copyright (C) 20014, Federal University of Minas Gerais, Belo Horizonte, Brazil
  */
-public interface IndividualSelector {
-    public Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData, Statistics stats);
+public abstract class IndividualSelector {
+    public abstract Individual selectIndividual(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData, Statistics stats);
+
+    public Individual[] selectIndividuals(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData, Statistics stats, int numIndividuals) {
+        Individual[] individuals = new Individual[numIndividuals];
+        for (int i = 0; i < numIndividuals; i++) {
+            individuals[i] = this.selectIndividual(population, individual, rnd, expData, stats);
+        }
+        return individuals;
+    }
 }

@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author bruno
  */
-public class BetweennessSelector implements IndividualSelector {
+public class BetweennessSelector extends IndividualSelector {
 
     public BetweennessSelector() {
 
