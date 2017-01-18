@@ -10,7 +10,6 @@ import edu.gsgp.population.Individual;
 import edu.gsgp.population.Population;
 import edu.gsgp.utils.MersenneTwister;
 import edu.gsgp.utils.Statistics;
-import edu.gsgp.utils.StatisticsDimension;
 import edu.gsgp.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.List;
  *
  * @author bruno
  */
-public class BetweennessSelector extends IndividualSelector {
+public class BetweennessSelector implements IndividualSelector {
 
     public BetweennessSelector() {
 
