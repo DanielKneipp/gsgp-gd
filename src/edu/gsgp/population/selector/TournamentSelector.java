@@ -20,11 +20,13 @@ import edu.gsgp.utils.Statistics;
  * luiz.vbo@gmail.com
  * Copyright (C) 20014, Federal University of Minas Gerais, Belo Horizonte, Brazil
  */
-public class TournamentSelector extends IndividualSelector{
+public class TournamentSelector implements IndividualSelector{
     private int tournamentSize;
+    private int tournamentBetweennessSize;
 
-    public TournamentSelector(int tournamentSize) {
+    public TournamentSelector(int tournamentSize, int tournamentBetweennessSize) {
         this.tournamentSize = tournamentSize;
+        this.tournamentBetweennessSize = tournamentBetweennessSize;
     }
     
     @Override
@@ -38,5 +40,13 @@ public class TournamentSelector extends IndividualSelector{
         }
         Arrays.sort(tournament);
         return tournament[0];
+    }
+    
+    public Individual[] selectIndividuals(Population population, Individual individual, MersenneTwister rnd, ExperimentalData expData, Statistics stats) {
+        Individual[] individuals = new Individual[this.tournamentBetweennessSize];
+        for (int i = 0; i < this.tournamentBetweennessSize; i++) {
+            individuals[i] = this.selectIndividual(population, individual, rnd, expData, stats);
+        }
+        return individuals;
     }
 }
