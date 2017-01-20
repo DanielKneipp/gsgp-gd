@@ -38,7 +38,7 @@ public class Experimenter {
                 // Run the algorithm for a defined number of repetitions
                 for(int execution = 0; execution < parameters.getNumExperiments(); execution++){
                     parameters.updateExperimentalData();
-                    experiments[execution] = new Experiment(new GSGP(parameters, parameters.getExperimentalData(), execution), execution);
+                    experiments[execution] = new Experiment(new GSGP(parameters, parameters.getExperimentalData(), execution), execution, this);
                     executor.execute(experiments[execution]);
                 }
                 executor.shutdown();
@@ -50,28 +50,30 @@ public class Experimenter {
             }
         }
     }
+
+    private synchronized void writeStatistics(GSGP gsgpInstance, int id) throws Exception{
+        DataWriter.writeResults(parameters.getOutputDir(),
+                parameters.getFilePrefix(),
+                gsgpInstance.getStatistics(), id);
+        gsgpInstance.getStatistics().writeInfoDimension(parameters.getOutputDir(), parameters.getFilePrefix());
+    }
     
     private class Experiment implements Runnable{
         GSGP gsgpInstance;
         int id;
+        Experimenter exp;
 
-        public Experiment(GSGP gsgpInstance, int id) {
+        public Experiment(GSGP gsgpInstance, int id, Experimenter exp) {
             this.gsgpInstance = gsgpInstance;
             this.id = id;
-        }
-        
-        private synchronized void writeStatistics() throws Exception{
-            DataWriter.writeResults(parameters.getOutputDir(), 
-                    parameters.getFilePrefix(), 
-                    gsgpInstance.getStatistics(), id);
-            gsgpInstance.getStatistics().writeInfoDimension(parameters.getOutputDir(), parameters.getFilePrefix());
+            this.exp = exp;
         }
         
         @Override
         public void run() {
             try{
                 gsgpInstance.evolve();
-                writeStatistics();
+                exp.writeStatistics(gsgpInstance, id);
             }
             catch (Exception ex) {
                 ex.printStackTrace();
