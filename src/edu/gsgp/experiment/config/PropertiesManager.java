@@ -840,8 +840,8 @@ public class PropertiesManager {
                     countDimension(stats, individuals, expData);
                     break;
                 case "betweeness":
-                    int chance = (int) (Math.random() * 100);
-                    if (chance <= (this.probability * 100)) {
+                    double chance = Math.random();
+                    if (chance < this.probability) {
                         individuals[1] = selectIndividual(pop, individuals[0], expData, stats);
                     } else {
 //                        statistics.addGeneration(StatisticsDimension.StatsTypeDimension.DIM_TOURNAMENT);
