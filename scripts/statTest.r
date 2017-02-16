@@ -58,6 +58,8 @@ statTestBetweenFolders = function(p1, p2, sort.1 = T, sort.2 = T,
     }
   } 
 }
-ds.names=list(c("concrete-sgp"), c("cpu-sgp"), c("energyHeating-sgp"), c("forestfires-sgp"), c("keijzer-6-sgp"), c("vladislavleva-1-sgp"))
-statTestBetweenFolders("/home/bruno/Área de Trabalho/out9.1/masterGSGP/", "/home/bruno/Área de Trabalho/out9.1/masterGSGPDimSel025/", sort.1 = T, sort.2 = T, paired = T, ds.names, test='wilcoxon', type='training')
+#ds.names=list(c("concrete-sgp"), c("cpu-sgp"), c("energyHeating-sgp"), c("forestfires-sgp"), c("keijzer-6-sgp"), c("vladislavleva-1-sgp"))
+ds.names=list(c("energyHeating-sgp"), c("forestfires-sgp"))
+#print(ds.names)
+statTestBetweenFolders("/home/bruno/Área de Trabalho/out11/masterGSGPDimSel00", "/home/bruno/Área de Trabalho/out11/masterGSGPDimSel01", sort.1 = T, sort.2 = T, paired = T, ds.names, test='wilcoxon', type='test')
 #statTest("/home/bruno/Área de Trabalho/out9.1/masterGSGP/concrete-sgp/", "/home/bruno/Área de Trabalho/out9.1/masterGSGPDimSel10/concrete-sgp/", sort.1 = T, sort.2 = T, paired = T, test = 'wilcoxon', type='test')

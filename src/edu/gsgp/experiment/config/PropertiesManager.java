@@ -899,15 +899,15 @@ public class PropertiesManager {
             double chance = Math.random();
             if (chance < this.probability) {
                 Individual[] individuals = new Individual[2];
-                individuals[0] = selectIndividual(population, rndGenerator, stats);
-//                Individual[] individualsPool = ((TournamentSelector) individualSelectorTournament).selectIndividuals(population, null, rndGenerator, null, stats);
-//                Arrays.sort(individualsPool);
-//                individuals[0] = individualsPool[0];
+//                individuals[0] = selectIndividual(population, rndGenerator, stats);
+                Individual[] individualsPool = ((TournamentSelector) individualSelectorTournament).selectIndividuals(population, null, rndGenerator, null, stats);
+                Arrays.sort(individualsPool);
+                individuals[0] = individualsPool[0];
                 Population pop = new Population();
-//                pop.addAll(individualsPool);
-//                pop.remove(individualsPool[0]);
-                pop.addAll(population);
-                pop.remove(individuals[0]);
+                pop.addAll(individualsPool);
+                pop.remove(individualsPool[0]);
+//                pop.addAll(population);
+//                pop.remove(individuals[0]);
                 individuals[1] = selectIndividual(pop, individuals[0], expData, stats);
                 return individuals;
             } else {
