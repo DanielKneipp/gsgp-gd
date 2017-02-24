@@ -32,7 +32,7 @@ public class BetweennessSelector implements IndividualSelector {
         List<Integer> indexIndividuals = new ArrayList<>();
         Integer bigger = -1;
         double[] outputs = expData.getDataset(Utils.DatasetType.TRAINING).getOutputs();
-        int index = identifyCloserIndividual(population, individual, outputs, indexIndividuals, bigger);
+        int index = identifyCloserIndividual(population, individual, outputs, indexIndividuals, bigger, rnd);
         getStatisticsDim(individual, population.get(index), stats, outputs);
         return population.get(index);
     }
@@ -68,7 +68,7 @@ public class BetweennessSelector implements IndividualSelector {
 //        return index2;
     }
 
-    private int identifyCloserIndividual(Population population, Individual individual, double[] outputs, List<Integer> indexIndividuals, Integer bigger) {
+    private int identifyCloserIndividual(Population population, Individual individual, double[] outputs, List<Integer> indexIndividuals, Integer bigger, MersenneTwister rnd) {
         int[] dimensions = new int[population.size()];
         int index = 0;
         for (Individual ind : population) {
@@ -81,7 +81,7 @@ public class BetweennessSelector implements IndividualSelector {
             compare(index, dimensions, indexIndividuals, bigger);
             index++;
         }
-        int indexIndividual = (int) (Math.random() * indexIndividuals.size());
+        int indexIndividual = rnd.nextInt(indexIndividuals.size());
         return indexIndividuals.get(indexIndividual);
     }
 
