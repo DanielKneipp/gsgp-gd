@@ -896,7 +896,7 @@ public class PropertiesManager {
 
     private Individual[] doBetweenness(Population population, MersenneTwister rndGenerator, ExperimentalData expData, Statistics stats) {
         try {
-            double chance = Math.random();
+            double chance = rndGenerator.nextDouble();
             if (chance < this.probability) {
                 Individual[] individuals = new Individual[2];
 //                individuals[0] = selectIndividual(population, rndGenerator, stats);
