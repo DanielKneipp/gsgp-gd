@@ -65,12 +65,13 @@ public class GSXEBreeder extends Breeder{
 //        Individual p1 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
 //        Individual p2 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
 //        while(p1.equals(p2)) p2 = (Individual)properties.selectIndividual(originalPopulation, rndGenerator);
-        while(individuals[0].equals(individuals[1])) individuals[1] = (Individual)properties.selectIndividual(originalPopulation, rndGenerator, stats);
+        while(individuals[0].equals(individuals[1]))
+            individuals[1] = (Individual)properties.selectIndividual(originalPopulation, rndGenerator, stats);
         double r = rndGenerator.nextDouble();
-        
+
         BigInteger numNodes = individuals[0].getNumNodes().add(individuals[1].getNumNodes()).add(BigInteger.ONE);
 //        BigInteger numNodes = BigInteger.ONE;
-        
+
         Fitness fitnessFunction = evaluate(individuals[0], individuals[1], r, expData);
         Individual offspring = new Individual(null, numNodes, fitnessFunction);
         return offspring;

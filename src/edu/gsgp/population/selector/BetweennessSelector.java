@@ -81,7 +81,9 @@ public class BetweennessSelector implements IndividualSelector {
             compare(index, dimensions, indexIndividuals, bigger);
             index++;
         }
-        int indexIndividual = rnd.nextInt(indexIndividuals.size());
+        int indexIndividual = 0;
+        if (indexIndividuals.size() > 1)
+            indexIndividual = rnd.nextInt(indexIndividuals.size());
         return indexIndividuals.get(indexIndividual);
     }
 
